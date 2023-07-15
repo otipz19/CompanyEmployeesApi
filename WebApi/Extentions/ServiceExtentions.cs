@@ -1,4 +1,7 @@
-﻿namespace WebApi.Extentions
+﻿using Contracts.LoggerService;
+using LoggerService;
+
+namespace WebApi.Extentions
 {
     public static class ServiceExtentions
     {
@@ -21,6 +24,11 @@
             {
 
             });
+        }
+
+        public static IServiceCollection AddLoggerService(this IServiceCollection services)
+        {
+            return services.AddSingleton<ILoggerManager, LoggerManager>();
         }
     }
 }

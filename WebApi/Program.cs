@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.HttpOverrides;
+using NLog;
 using WebApi.Extentions;
 
 namespace WebApi
@@ -11,10 +12,15 @@ namespace WebApi
 
             // Add services to the container.
 
+            //LogManager.LoadConfiguration(Path.Combine(Directory.GetCurrentDirectory(), "nlog.config"));
+            LogManager.Setup().LoadConfigurationFromFile();
+
             builder.Services.AddControllers();
 
             builder.Services.ConfigureCors()
                 .ConfigureIISIntegration();
+
+            builder.Services.AddLoggerService();
 
             var app = builder.Build();
 
