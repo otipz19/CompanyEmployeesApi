@@ -20,9 +20,10 @@ namespace WebApi
             builder.Services.ConfigureCors()
                 .ConfigureIISIntegration();
 
-            builder.Services.AddLoggerService();
+            builder.Services.AddServices();
 
-            builder.Services.AddRepositories();
+            builder.Services.AddRepositoryContext(builder.Configuration)
+                .AddRepositories();
 
             var app = builder.Build();
 

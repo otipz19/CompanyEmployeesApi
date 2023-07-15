@@ -1,8 +1,12 @@
 ﻿using Contracts.LoggerService;
 using Contracts.Repository;
 using LoggerService;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Repository;
+using Service;
+using Service.Contracts;
+using System.Net.NetworkInformation;
 
 namespace WebApi.Extentions
 {
@@ -29,14 +33,23 @@ namespace WebApi.Extentions
             });
         }
 
-        public static IServiceCollection AddLoggerService(this IServiceCollection services)
+        public static IServiceCollection AddRepositoryContext(this IServiceCollection services, IConfiguration configuration)
         {
-            return services.AddSingleton<ILoggerManager, LoggerManager>();
+            return services.AddDbContext<RepositoryContext>(options =>
+            {
+                options.UseSqlServer(configuration.GetConnectionString("localhost"));
+            });
         }
 
         public static IServiceCollection AddRepositories(this IServiceCollection services)
         {
             return services.AddScoped<IRepositoryManager, RepositoryManager>();
+        }
+
+        public static IServiceCollection AddServices(this IServiceCollection services)
+        {
+            return services.AddScoped<IServiceManager, ServiceManager>()
+                .AddSingleton<ILoggerManager, LoggerManager>();
         }
     }
 }
