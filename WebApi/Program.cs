@@ -12,7 +12,7 @@ namespace WebApi
 
             // Add services to the container.
 
-            //LogManager.LoadConfiguration(Path.Combine(Directory.GetCurrentDirectory(), "nlog.config"));
+            //LogManager.LoadConfiguration(string.Concat(Directory.GetCurrentDirectory(), "/nlog.config"));
             LogManager.Setup().LoadConfigurationFromFile();
 
             builder.Services.AddControllers();
