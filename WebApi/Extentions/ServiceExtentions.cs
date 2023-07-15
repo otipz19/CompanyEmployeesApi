@@ -35,10 +35,7 @@ namespace WebApi.Extentions
 
         public static IServiceCollection AddRepositoryContext(this IServiceCollection services, IConfiguration configuration)
         {
-            return services.AddDbContext<RepositoryContext>(options =>
-            {
-                options.UseSqlServer(configuration.GetConnectionString("localhost"));
-            });
+            return services.AddSqlServer<RepositoryContext>(configuration.GetConnectionString("localhost"));
         }
 
         public static IServiceCollection AddRepositories(this IServiceCollection services)

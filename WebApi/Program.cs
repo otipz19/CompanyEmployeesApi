@@ -15,7 +15,8 @@ namespace WebApi
             //LogManager.LoadConfiguration(string.Concat(Directory.GetCurrentDirectory(), "/nlog.config"));
             LogManager.Setup().LoadConfigurationFromFile();
 
-            builder.Services.AddControllers();
+            builder.Services.AddControllers()
+                .AddApplicationPart(typeof(Presentation.AssemblyReference).Assembly);
 
             builder.Services.ConfigureCors()
                 .ConfigureIISIntegration();
