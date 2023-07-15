@@ -1,3 +1,6 @@
+using Microsoft.AspNetCore.HttpOverrides;
+using WebApi.Extentions;
+
 namespace WebApi
 {
     public class Program
@@ -10,14 +13,34 @@ namespace WebApi
 
             builder.Services.AddControllers();
 
+            builder.Services.ConfigureCors()
+                .ConfigureIISIntegration();
+
             var app = builder.Build();
 
             // Configure the HTTP request pipeline.
 
+            if(app.Environment.IsDevelopment())
+            {
+                app.UseDeveloperExceptionPage();
+            }
+            else
+            {
+                app.UseHsts();
+            }
+
             app.UseHttpsRedirection();
 
-            app.UseAuthorization();
+            app.UseStaticFiles();
 
+            app.UseForwardedHeaders(new ForwardedHeadersOptions
+            {
+                ForwardedHeaders = ForwardedHeaders.All,
+            });
+
+            app.UseCors(ServiceExtentions.CorsPolicy);
+
+            app.UseAuthorization();
 
             app.MapControllers();
 
