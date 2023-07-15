@@ -22,6 +22,8 @@ namespace WebApi
 
             builder.Services.AddLoggerService();
 
+            builder.Services.AddRepositories();
+
             var app = builder.Build();
 
             // Configure the HTTP request pipeline.

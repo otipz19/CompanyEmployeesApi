@@ -1,5 +1,8 @@
 ﻿using Contracts.LoggerService;
+using Contracts.Repository;
 using LoggerService;
+using Microsoft.Extensions.DependencyInjection;
+using Repository;
 
 namespace WebApi.Extentions
 {
@@ -29,6 +32,11 @@ namespace WebApi.Extentions
         public static IServiceCollection AddLoggerService(this IServiceCollection services)
         {
             return services.AddSingleton<ILoggerManager, LoggerManager>();
+        }
+
+        public static IServiceCollection AddRepositories(this IServiceCollection services)
+        {
+            return services.AddScoped<IRepositoryManager, RepositoryManager>();
         }
     }
 }
