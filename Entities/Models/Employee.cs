@@ -10,18 +10,18 @@ namespace Entities.Models
 
         [Required]
         [MaxLength(30)]
-        public string? Name { get; set; }
+        public string Name { get; set; }
 
         [Required]
         public int Age { get; set; }
 
         [Required]
         [MaxLength(20)]
-        public string? Position { get; set; }
+        public string Position { get; set; }
 
         [ForeignKey(nameof(Company))]
         public Guid CompanyId { get; set; }
 
-        public Company? Company { get; set; }
+        public Company Company { get; set; }
     }
 }

@@ -2,7 +2,8 @@
 
 namespace Contracts.Repository
 {
-    public interface ICompanyRepository : IRepositoryBase<Company>
+    public interface ICompanyRepository
     {
+        public Task<IEnumerable<Company>> GetAllCompanies(bool asNoTracking);
     }
 }
