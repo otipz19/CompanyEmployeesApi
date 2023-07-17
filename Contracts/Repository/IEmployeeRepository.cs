@@ -2,7 +2,8 @@
 
 namespace Contracts.Repository
 {
-    public interface IEmployeeRepository : IRepositoryBase<Employee>
+    public interface IEmployeeRepository
     {
+        public Task<IEnumerable<Employee>> GetAllEmployeesForCompany(Guid companyId, bool asNoTracking);
     }
 }

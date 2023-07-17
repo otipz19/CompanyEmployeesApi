@@ -13,6 +13,8 @@ namespace WebApi
                 {
                     options.MapFrom(company => string.Join(' ', company.Country, company.Address));
                 });
+
+            CreateMap<Employee, EmployeeDto>();
         }
     }
 }

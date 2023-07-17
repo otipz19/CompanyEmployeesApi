@@ -10,14 +10,14 @@ namespace Service
     public class CompanyService : ICompanyService
     {
         private readonly IRepositoryManager _repositories;
-        private readonly ILoggerManager _loggerManager;
+        private readonly ILoggerManager _logger;
         private readonly IMapper _mapper;
 
         public CompanyService(ILoggerManager loggerManager,
             IRepositoryManager repositoryManager,
             IMapper mapper)
         {
-            _loggerManager = loggerManager;
+            _logger = loggerManager;
             _repositories = repositoryManager;
             _mapper = mapper;
         }
@@ -33,7 +33,7 @@ namespace Service
         {
             var company = await _repositories.Companies.GetCompany(id, asNoTracking);
 
-            if(company == null)
+            if(company is null)
             {
                 throw new CompanyNotFoundException(id);
             }
