@@ -18,14 +18,21 @@ namespace Presentation.Controllers
         [HttpGet]
         public async Task<ActionResult> GetCompanies()
         {
-            var companies = await _services.CompanyService.GetAllCompanies(asNoTracking: true);
+            IEnumerable<GetCompanyDto> companies = await _services.CompanyService.GetAllCompanies(asNoTracking: true);
+            return Ok(companies);
+        }
+
+        [HttpGet("collection/({ids})")]
+        public async Task<ActionResult> GetCompaniesByIds(IEnumerable<Guid> ids)
+        {
+            IEnumerable<GetCompanyDto> companies = await _services.CompanyService.GetCompaniesByIds(ids, asNoTracking: true);
             return Ok(companies);
         }
 
         [HttpGet("{id:guid}")]
         public async Task<ActionResult> GetCompany(Guid id)
         {
-            var company = await _services.CompanyService.GetCompany(id, asNoTracking: true);
+            GetCompanyDto company = await _services.CompanyService.GetCompany(id, asNoTracking: true);
             return Ok(company);
         }
 

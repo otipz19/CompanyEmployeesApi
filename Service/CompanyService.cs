@@ -40,6 +40,20 @@ namespace Service
             return companiesDto;
         }
 
+        public async Task<IEnumerable<GetCompanyDto>> GetCompaniesByIds(IEnumerable<Guid>? ids, bool asNoTracking)
+        {
+            if (ids is null)
+                throw new IdParametersBadRequestException();
+
+            IEnumerable<Company> companies = await _repositories.Companies.GetCompaniesByIds(ids, asNoTracking);
+
+            if (companies.Count() != ids.Count())
+                throw new CollectionByIdsBadRequestException();
+
+            IEnumerable<GetCompanyDto> getCompanyDtos = _mapper.Map<IEnumerable<GetCompanyDto>>(companies);
+            return getCompanyDtos;
+        }
+
         public async Task<GetCompanyDto> GetCompany(Guid id, bool asNoTracking)
         {
             Company? company = await _repositories.Companies.GetCompany(id, asNoTracking);

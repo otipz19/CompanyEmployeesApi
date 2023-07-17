@@ -30,5 +30,12 @@ namespace Presentation.Controllers
                 .GetEmployeeForCompany(companyId, id, asNoTracking: true);
             return Ok(employee);
         }
+
+        [HttpPost]
+        public async Task<ActionResult> CreateEmployee(CreateEmployeeDto createDto, Guid companyId)
+        {
+            GetEmployeeDto result = await _services.EmployeeService.CreateEmployeeForCompany(createDto, companyId);
+            return CreatedAtAction(nameof(GetEmployeeForCompany), new { companyId = companyId, id = result.Id }, result);
+        }
     }
 }

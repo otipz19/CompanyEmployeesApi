@@ -23,6 +23,18 @@ namespace Service
             _mapper = mapper;
         }
 
+        public async Task<GetEmployeeDto> CreateEmployeeForCompany(CreateEmployeeDto dto, Guid companyId)
+        {
+            await CheckCompanyExists(companyId);
+
+            Employee employee = _mapper.Map<Employee>(dto);
+
+            _repositories.Employees.CreateEmployee(employee, companyId);
+            await _repositories.SaveChangesAsync();
+
+            return _mapper.Map<GetEmployeeDto>(employee);
+        }
+
         public async Task<IEnumerable<GetEmployeeDto>> GetAllEmployeesForCompany(Guid companyId, bool asNoTracking)
         {
             await CheckCompanyExists(companyId);
@@ -48,7 +60,7 @@ namespace Service
             return employeeDto;
         }
 
-        private async Task CheckCompanyExists(Guid companyId)
+        private async Task<Company> CheckCompanyExists(Guid companyId)
         {
             Company? company = await _repositories.Companies.GetCompany(companyId, asNoTracking: true);
 
@@ -56,6 +68,8 @@ namespace Service
             {
                 throw new CompanyNotFoundException(companyId);
             }
+
+            return company;
         }
     }
 }

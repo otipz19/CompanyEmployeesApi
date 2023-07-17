@@ -6,6 +6,8 @@ namespace Service.Contracts
     {
         public Task<IEnumerable<GetCompanyDto>> GetAllCompanies(bool asNoTracking);
 
+        public Task<IEnumerable<GetCompanyDto>> GetCompaniesByIds(IEnumerable<Guid> ids, bool asNoTracking);
+
         public Task<GetCompanyDto> GetCompany(Guid id, bool asNoTracking);
 
         public Task<GetCompanyDto> CreateCompany(CreateCompanyDto dto);

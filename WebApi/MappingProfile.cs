@@ -18,6 +18,8 @@ namespace WebApi
             CreateMap<CreateCompanyDto, Company>();
 
             CreateMap<Employee, GetEmployeeDto>();
+
+            CreateMap<CreateEmployeeDto, Employee>();
         }
     }
 }

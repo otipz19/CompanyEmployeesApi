@@ -22,6 +22,14 @@ namespace Repository
                 .ToListAsync();
         }
 
+        public async Task<IEnumerable<Company>> GetCompaniesByIds(IEnumerable<Guid> ids, bool asNoTracking)
+        {
+            IEnumerable<Company> companies = await GetByCondition(c => ids.Contains(c.Id), asNoTracking)
+                .OrderBy(c => c.Name)
+                .ToListAsync();
+            return companies;
+        }
+
         public async Task<Company?> GetCompany(Guid id, bool asNoTracking)
         {
             Company? company = await GetByCondition(c => c.Id == id, asNoTracking)

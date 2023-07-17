@@ -10,6 +10,12 @@ namespace Repository
         {
         }
 
+        public void CreateEmployee(Employee employee, Guid companyId)
+        {
+            employee.CompanyId = companyId;
+            Create(employee);
+        }
+
         public async Task<IEnumerable<Employee>> GetAllEmployeesForCompany(Guid companyId, bool asNoTracking)
         {
             IEnumerable<Employee> employees = await GetByCondition(e => e.CompanyId == companyId, asNoTracking)
