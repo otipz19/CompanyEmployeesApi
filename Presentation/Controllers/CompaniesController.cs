@@ -18,14 +18,7 @@ namespace Presentation.Controllers
         [HttpGet]
         public async Task<ActionResult> GetCompanies()
         {
-            try
-            {
-                return Ok(await _services.CompanyService.GetAllCompanies(asNoTracking: true));
-            }
-            catch
-            {
-                return StatusCode(StatusCodes.Status500InternalServerError);
-            }
+            return Ok(await _services.CompanyService.GetAllCompanies(asNoTracking: true));
         }
     }
 }

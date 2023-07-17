@@ -1,3 +1,4 @@
+using Contracts.LoggerService;
 using Microsoft.AspNetCore.HttpOverrides;
 using NLog;
 using WebApi.Extentions;
@@ -32,11 +33,10 @@ namespace WebApi
 
             // Configure the HTTP request pipeline.
 
-            if(app.Environment.IsDevelopment())
-            {
-                app.UseDeveloperExceptionPage();
-            }
-            else
+            ILoggerManager logger = app.Services.GetRequiredService<ILoggerManager>();
+            app.ConfigureExceptionHandler(logger);
+
+            if (app.Environment.IsProduction())
             {
                 app.UseHsts();
             }

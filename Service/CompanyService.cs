@@ -24,17 +24,9 @@ namespace Service
 
         public async Task<IEnumerable<CompanyDto>> GetAllCompanies(bool asNoTracking)
         {
-            try
-            {
-                var companies = await _repositories.Companies.GetAllCompanies(asNoTracking);
-                var companiesDto = _mapper.Map<IEnumerable<CompanyDto>>(companies);
-                return companiesDto;
-            }
-            catch(Exception ex)
-            {
-                _loggerManager.LogError($"Something went wrong in {nameof(GetAllCompanies)} service method: {ex}");
-                throw;
-            }
+            var companies = await _repositories.Companies.GetAllCompanies(asNoTracking);
+            var companiesDto = _mapper.Map<IEnumerable<CompanyDto>>(companies);
+            return companiesDto;
         }
     }
 }
