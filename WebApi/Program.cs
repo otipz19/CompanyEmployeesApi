@@ -2,6 +2,7 @@ using Contracts.LoggerService;
 using Microsoft.AspNetCore.HttpOverrides;
 using NLog;
 using WebApi.Extentions;
+using WebApi.Formatters;
 
 namespace WebApi
 {
@@ -16,12 +17,8 @@ namespace WebApi
             //LogManager.LoadConfiguration(string.Concat(Directory.GetCurrentDirectory(), "/nlog.config"));
             LogManager.Setup().LoadConfigurationFromFile();
 
-            builder.Services.AddControllers(config =>
-            {
-                config.RespectBrowserAcceptHeader = true;
-                config.ReturnHttpNotAcceptable = true;
-            }).AddXmlDataContractSerializerFormatters()
-            .AddApplicationPart(typeof(Presentation.AssemblyReference).Assembly);
+            builder.Services.AddControllersWithFormatters()
+                .AddApplicationPart(typeof(Presentation.AssemblyReference).Assembly);
 
             builder.Services.ConfigureCors()
                 .ConfigureIISIntegration();

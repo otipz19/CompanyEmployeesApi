@@ -7,6 +7,7 @@ using Repository;
 using Service;
 using Service.Contracts;
 using System.Net.NetworkInformation;
+using WebApi.Formatters;
 
 namespace WebApi.Extentions
 {
@@ -47,6 +48,19 @@ namespace WebApi.Extentions
         {
             return services.AddScoped<IServiceManager, ServiceManager>()
                 .AddSingleton<ILoggerManager, LoggerManager>();
+        }
+
+        public static IMvcBuilder AddControllersWithFormatters(this IServiceCollection services)
+        {
+            return services.AddControllers(config =>
+            {
+                config.RespectBrowserAcceptHeader = true;
+                config.ReturnHttpNotAcceptable = true;
+            }).AddXmlDataContractSerializerFormatters()
+            .AddMvcOptions(config =>
+            {
+                config.OutputFormatters.Add(new CsvOutputFormatter());
+            });
         }
     }
 }
