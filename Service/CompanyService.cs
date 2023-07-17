@@ -33,6 +33,22 @@ namespace Service
             return _mapper.Map<GetCompanyDto>(company);
         }
 
+        public async Task<IEnumerable<GetCompanyDto>> CreateCompaniesCollection(IEnumerable<CreateCompanyDto> dtos)
+        {
+            if (dtos is null)
+                throw new CompaniesCollectionBadRequest();
+
+            IEnumerable<Company> companies = _mapper.Map<IEnumerable<Company>>(dtos);
+
+            foreach(var company in companies)
+            {
+                _repositories.Companies.CreateCompany(company);
+            }
+            await _repositories.SaveChangesAsync();
+
+            return _mapper.Map<IEnumerable<GetCompanyDto>>(companies);
+        }
+
         public async Task<IEnumerable<GetCompanyDto>> GetAllCompanies(bool asNoTracking)
         {
             IEnumerable<Company> companies = await _repositories.Companies.GetAllCompanies(asNoTracking);
@@ -58,7 +74,7 @@ namespace Service
         {
             Company? company = await _repositories.Companies.GetCompany(id, asNoTracking);
 
-            if(company is null)
+            if (company is null)
             {
                 throw new CompanyNotFoundException(id);
             }

@@ -37,10 +37,18 @@ namespace Presentation.Controllers
         }
 
         [HttpPost]
-        public async Task<ActionResult> CreateCompany([FromBody] CreateCompanyDto company)
+        public async Task<ActionResult> CreateCompany(CreateCompanyDto createDto)
         {
-            GetCompanyDto result = await _services.CompanyService.CreateCompany(company);
+            GetCompanyDto result = await _services.CompanyService.CreateCompany(createDto);
             return CreatedAtAction(nameof(GetCompany), new { id = result.Id }, result);
+        }
+
+        [HttpPost("collection")]
+        public async Task<ActionResult> CreateCompanies(IEnumerable<CreateCompanyDto> createDtos)
+        {
+            IEnumerable<GetCompanyDto> result = await _services.CompanyService.CreateCompaniesCollection(createDtos);
+            string ids = string.Join(',', result.Select(c => c.Id.ToString()));
+            return CreatedAtAction(nameof(GetCompaniesByIds), new { ids = ids }, result);
         }
     }
 }
