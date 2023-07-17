@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using Entities.Models;
-using Shared.DTO;
+using Shared.DTO.Company;
+using Shared.DTO.Employee;
 
 namespace WebApi
 {
@@ -8,13 +9,15 @@ namespace WebApi
     {
         public MappingProfile()
         {
-            CreateMap<Company, CompanyDto>()
+            CreateMap<Company, GetCompanyDto>()
                 .ForMember(c => c.FullAddress, options =>
                 {
                     options.MapFrom(company => string.Join(' ', company.Country, company.Address));
                 });
 
-            CreateMap<Employee, EmployeeDto>();
+            CreateMap<CreateCompanyDto, Company>();
+
+            CreateMap<Employee, GetEmployeeDto>();
         }
     }
 }

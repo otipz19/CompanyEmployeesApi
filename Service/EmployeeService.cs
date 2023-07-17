@@ -4,7 +4,7 @@ using Contracts.Repository;
 using Entities.Exceptions;
 using Entities.Models;
 using Service.Contracts;
-using Shared.DTO;
+using Shared.DTO.Employee;
 
 namespace Service
 {
@@ -23,18 +23,18 @@ namespace Service
             _mapper = mapper;
         }
 
-        public async Task<IEnumerable<EmployeeDto>> GetAllEmployeesForCompany(Guid companyId, bool asNoTracking)
+        public async Task<IEnumerable<GetEmployeeDto>> GetAllEmployeesForCompany(Guid companyId, bool asNoTracking)
         {
             await CheckCompanyExists(companyId);
 
             IEnumerable<Employee> employees = await _repositories.Employees
                 .GetAllEmployeesForCompany(companyId, asNoTracking);
 
-            IEnumerable<EmployeeDto> employeeDtos = _mapper.Map<IEnumerable<EmployeeDto>>(employees);
+            IEnumerable<GetEmployeeDto> employeeDtos = _mapper.Map<IEnumerable<GetEmployeeDto>>(employees);
             return employeeDtos;
         }
 
-        public async Task<EmployeeDto> GetEmployeeForCompany(Guid companyId, Guid employeeId, bool asNoTracking)
+        public async Task<GetEmployeeDto> GetEmployeeForCompany(Guid companyId, Guid employeeId, bool asNoTracking)
         {
             await CheckCompanyExists(companyId);
 
@@ -44,7 +44,7 @@ namespace Service
                 throw new EmployeeNotFoundException(companyId, employeeId);
             }
 
-            EmployeeDto employeeDto = _mapper.Map<EmployeeDto>(employee);
+            GetEmployeeDto employeeDto = _mapper.Map<GetEmployeeDto>(employee);
             return employeeDto;
         }
 

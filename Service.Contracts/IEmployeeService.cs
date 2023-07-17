@@ -1,11 +1,11 @@
-﻿using Shared.DTO;
+﻿using Shared.DTO.Employee;
 
 namespace Service.Contracts
 {
     public interface IEmployeeService
     {
-        public Task<IEnumerable<EmployeeDto>> GetAllEmployeesForCompany(Guid companyId, bool asNoTracking); 
+        public Task<IEnumerable<GetEmployeeDto>> GetAllEmployeesForCompany(Guid companyId, bool asNoTracking); 
 
-        public Task<EmployeeDto> GetEmployeeForCompany(Guid companyId, Guid employeeId, bool asNoTracking);
+        public Task<GetEmployeeDto> GetEmployeeForCompany(Guid companyId, Guid employeeId, bool asNoTracking);
     }
 }

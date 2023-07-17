@@ -1,6 +1,6 @@
-﻿namespace Shared.DTO
+﻿namespace Shared.DTO.Company
 {
-    public record CompanyDto
+    public record GetCompanyDto
     {
         public Guid Id { get; init; }
 

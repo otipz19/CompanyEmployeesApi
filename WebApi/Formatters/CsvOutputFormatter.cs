@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc.Formatters;
 using Microsoft.Net.Http.Headers;
-using Shared.DTO;
+using Shared.DTO.Company;
 using System.Collections;
 using System.Reflection;
 using System.Text;
@@ -61,7 +61,7 @@ namespace WebApi.Formatters
                 }
                 else
                 {
-                    PropertyInfo[] propertyInfos = elementType.GetProperties();
+                    PropertyInfo[] propertyInfos = elementType!.GetProperties();
                     foreach(var item in (IEnumerable)context.Object)
                     {
                         WriteCsvByPropertyInfos(builder, propertyInfos, item);
@@ -82,7 +82,7 @@ namespace WebApi.Formatters
         //    return false;
         //}
 
-        private void WriteCsv(StringBuilder builder, CompanyDto company)
+        private void WriteCsv(StringBuilder builder, GetCompanyDto company)
         {
             builder.AppendLine($"{company.Id}, '{company.Name}', '{company.FullAddress}'");
         }

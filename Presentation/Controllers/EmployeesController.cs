@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Service.Contracts;
-using Shared.DTO;
+using Shared.DTO.Employee;
 
 namespace Presentation.Controllers
 {
@@ -18,7 +18,7 @@ namespace Presentation.Controllers
         [HttpGet]
         public async Task<ActionResult> GetEmployeesForCompany(Guid companyId)
         {
-            IEnumerable<EmployeeDto> employees = await _services.EmployeeService
+            IEnumerable<GetEmployeeDto> employees = await _services.EmployeeService
                 .GetAllEmployeesForCompany(companyId, asNoTracking: true);
             return Ok(employees);
         }
@@ -26,7 +26,7 @@ namespace Presentation.Controllers
         [HttpGet("{id:guid}")]
         public async Task<ActionResult> GetEmployeeForCompany(Guid companyId, Guid id)
         {
-            EmployeeDto employee = await _services.EmployeeService
+            GetEmployeeDto employee = await _services.EmployeeService
                 .GetEmployeeForCompany(companyId, id, asNoTracking: true);
             return Ok(employee);
         }

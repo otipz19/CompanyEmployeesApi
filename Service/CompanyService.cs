@@ -2,8 +2,9 @@
 using Contracts.LoggerService;
 using Contracts.Repository;
 using Entities.Exceptions;
+using Entities.Models;
 using Service.Contracts;
-using Shared.DTO;
+using Shared.DTO.Company;
 
 namespace Service
 {
@@ -22,23 +23,33 @@ namespace Service
             _mapper = mapper;
         }
 
-        public async Task<IEnumerable<CompanyDto>> GetAllCompanies(bool asNoTracking)
+        public async Task<GetCompanyDto> CreateCompany(CreateCompanyDto dto)
         {
-            var companies = await _repositories.Companies.GetAllCompanies(asNoTracking);
-            var companiesDto = _mapper.Map<IEnumerable<CompanyDto>>(companies);
+            Company company = _mapper.Map<Company>(dto);
+
+            _repositories.Companies.CreateCompany(company);
+            await _repositories.SaveChangesAsync();
+
+            return _mapper.Map<GetCompanyDto>(company);
+        }
+
+        public async Task<IEnumerable<GetCompanyDto>> GetAllCompanies(bool asNoTracking)
+        {
+            IEnumerable<Company> companies = await _repositories.Companies.GetAllCompanies(asNoTracking);
+            IEnumerable<GetCompanyDto> companiesDto = _mapper.Map<IEnumerable<GetCompanyDto>>(companies);
             return companiesDto;
         }
 
-        public async Task<CompanyDto> GetCompany(Guid id, bool asNoTracking)
+        public async Task<GetCompanyDto> GetCompany(Guid id, bool asNoTracking)
         {
-            var company = await _repositories.Companies.GetCompany(id, asNoTracking);
+            Company? company = await _repositories.Companies.GetCompany(id, asNoTracking);
 
             if(company is null)
             {
                 throw new CompanyNotFoundException(id);
             }
 
-            var companieDto = _mapper.Map<CompanyDto>(company);
+            var companieDto = _mapper.Map<GetCompanyDto>(company);
             return companieDto;
         }
     }

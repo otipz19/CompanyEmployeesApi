@@ -10,6 +10,11 @@ namespace Repository
         {
         }
 
+        public void CreateCompany(Company company)
+        {
+            Create(company);
+        }
+
         public async Task<IEnumerable<Company>> GetAllCompanies(bool asNoTracking)
         {
             return await GetAll(asNoTracking)
