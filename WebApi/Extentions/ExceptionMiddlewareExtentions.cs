@@ -1,5 +1,6 @@
 ﻿using Contracts.LoggerService;
 using Entities.ErrorModel;
+using Entities.Exceptions;
 using Microsoft.AspNetCore.Diagnostics;
 
 namespace WebApi.Extentions
@@ -12,21 +13,27 @@ namespace WebApi.Extentions
             {
                 app.Run(async context =>
                 {
-                    context.Response.StatusCode = (int)StatusCodes.Status500InternalServerError;
                     context.Response.ContentType = "application/json";
 
                     var handler = context.Features.Get<IExceptionHandlerFeature>();
                     if(handler != null)
                     {
-                        Exception exception = handler.Error;
+                        logger.LogError($"Something went wrong: {handler.Error}");
 
-                        logger.LogError($"Something went wrong: {exception}");
+                        context.Response.StatusCode = handler.Error switch
+                        {
+                            NotFoundException => StatusCodes.Status404NotFound,
+                            _ => StatusCodes.Status500InternalServerError
+                        };
 
-                        await context.Response.WriteAsync(new ErrorDetails()
+                        var errorDetails = new ErrorDetails()
                         {
                             StatusCode = context.Response.StatusCode,
-                            Message = "Internal Server Error",
-                        }.ToString());
+                            Message = context.Response.StatusCode == StatusCodes.Status500InternalServerError ?
+                                "Internal Server Error" : handler.Error.Message,
+                        };
+
+                        await context.Response.WriteAsync(errorDetails.ToString());
                     }
                 });
             });

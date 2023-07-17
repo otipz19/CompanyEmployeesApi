@@ -1,7 +1,7 @@
 ﻿using AutoMapper;
 using Contracts.LoggerService;
 using Contracts.Repository;
-using Entities.Models;
+using Entities.Exceptions;
 using Service.Contracts;
 using Shared.DTO;
 
@@ -35,7 +35,7 @@ namespace Service
 
             if(company == null)
             {
-                //TODO
+                throw new CompanyNotFoundException(id);
             }
 
             var companieDto = _mapper.Map<CompanyDto>(company);
