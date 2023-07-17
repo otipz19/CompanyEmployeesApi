@@ -17,10 +17,11 @@ namespace Repository
                 .ToListAsync();
         }
 
-        public async Task<Company> GetCompany(Guid id, bool asNoTracking)
+        public async Task<Company?> GetCompany(Guid id, bool asNoTracking)
         {
-            return await GetByCondition(c => c.Id == id, asNoTracking)
+            Company? company = await GetByCondition(c => c.Id == id, asNoTracking)
                 .SingleOrDefaultAsync();
+            return company;
         }
     }
 }

@@ -22,5 +22,13 @@ namespace Presentation.Controllers
                 .GetAllEmployeesForCompany(companyId, asNoTracking: true);
             return Ok(employees);
         }
+
+        [HttpGet("{id:guid}")]
+        public async Task<ActionResult> GetEmployeeForCompany(Guid companyId, Guid id)
+        {
+            EmployeeDto employee = await _services.EmployeeService
+                .GetEmployeeForCompany(companyId, id, asNoTracking: true);
+            return Ok(employee);
+        }
     }
 }

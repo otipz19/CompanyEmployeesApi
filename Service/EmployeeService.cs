@@ -25,19 +25,37 @@ namespace Service
 
         public async Task<IEnumerable<EmployeeDto>> GetAllEmployeesForCompany(Guid companyId, bool asNoTracking)
         {
-            Company company = await _repositories.Companies.GetCompany(companyId, asNoTracking);
-
-            if(company is null)
-            {
-                throw new CompanyNotFoundException(companyId);
-            }
+            await CheckCompanyExists(companyId);
 
             IEnumerable<Employee> employees = await _repositories.Employees
                 .GetAllEmployeesForCompany(companyId, asNoTracking);
 
             IEnumerable<EmployeeDto> employeeDtos = _mapper.Map<IEnumerable<EmployeeDto>>(employees);
-
             return employeeDtos;
+        }
+
+        public async Task<EmployeeDto> GetEmployeeForCompany(Guid companyId, Guid employeeId, bool asNoTracking)
+        {
+            await CheckCompanyExists(companyId);
+
+            Employee? employee = await _repositories.Employees.GetEmployeeForCompany(companyId, employeeId, asNoTracking);
+            if(employee is null)
+            {
+                throw new EmployeeNotFoundException(companyId, employeeId);
+            }
+
+            EmployeeDto employeeDto = _mapper.Map<EmployeeDto>(employee);
+            return employeeDto;
+        }
+
+        private async Task CheckCompanyExists(Guid companyId)
+        {
+            Company? company = await _repositories.Companies.GetCompany(companyId, asNoTracking: true);
+
+            if (company is null)
+            {
+                throw new CompanyNotFoundException(companyId);
+            }
         }
     }
 }
