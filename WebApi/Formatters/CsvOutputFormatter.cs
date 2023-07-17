@@ -1,6 +1,8 @@
 ﻿using Microsoft.AspNetCore.Mvc.Formatters;
 using Microsoft.Net.Http.Headers;
 using Shared.DTO;
+using System.Collections;
+using System.Reflection;
 using System.Text;
 
 namespace WebApi.Formatters
@@ -16,35 +18,82 @@ namespace WebApi.Formatters
 
         public override async Task WriteResponseBodyAsync(OutputFormatterWriteContext context, Encoding selectedEncoding)
         {
-            StringBuilder builder = new StringBuilder();
-            if (context.Object is CompanyDto company)
+            //StringBuilder builder = new StringBuilder();
+            //if (context.Object is CompanyDto company)
+            //{
+            //    WriteCsv(builder, company);
+            //}
+            //else if (context.Object is IEnumerable<CompanyDto> companies)
+            //{
+            //    foreach(var c in companies)
+            //    {
+            //        WriteCsv(builder, c);
+            //    }
+            //}
+
+            //await context.HttpContext.Response.WriteAsync(builder.ToString());
+
+            
+
+            if(context.Object is not null)
             {
-                WriteCsv(builder, company);
-            }
-            else if (context.Object is IEnumerable<CompanyDto> companies)
-            {
-                foreach(var c in companies)
+                Type objectType = context.Object.GetType();
+                Type? elementType = null;
+                bool isCollection = false;
+
+                foreach(var it in objectType.GetInterfaces())
                 {
-                    WriteCsv(builder, c);
+                    if(it.IsGenericType && it.GetGenericTypeDefinition() == typeof(IEnumerable<>))
+                    {
+                        elementType = it.GetGenericArguments()[0];
+                        isCollection = true;
+                        break;
+                    }
                 }
-            }
 
-            await context.HttpContext.Response.WriteAsync(builder.ToString());
+                StringBuilder builder = new StringBuilder();
+
+                if (!isCollection)
+                {
+                    elementType = objectType;
+                    PropertyInfo[] propertyInfos = elementType.GetProperties();
+                    WriteCsvByPropertyInfos(builder, propertyInfos, context.Object);
+                }
+                else
+                {
+                    PropertyInfo[] propertyInfos = elementType.GetProperties();
+                    foreach(var item in (IEnumerable)context.Object)
+                    {
+                        WriteCsvByPropertyInfos(builder, propertyInfos, item);
+                    }
+                }
+                
+                await context.HttpContext.Response.WriteAsync(builder.ToString());
+            }
         }
 
-        protected override bool CanWriteType(Type? type)
-        {
-            if (typeof(CompanyDto).IsAssignableFrom(type) || typeof(IEnumerable<CompanyDto>).IsAssignableFrom(type))
-            {
-                return base.CanWriteType(type);
-            }
+        //protected override bool CanWriteType(Type? type)
+        //{
+        //    if (typeof(CompanyDto).IsAssignableFrom(type) || typeof(IEnumerable<CompanyDto>).IsAssignableFrom(type))
+        //    {
+        //        return base.CanWriteType(type);
+        //    }
 
-            return false;
-        }
+        //    return false;
+        //}
 
         private void WriteCsv(StringBuilder builder, CompanyDto company)
         {
             builder.AppendLine($"{company.Id}, '{company.Name}', '{company.FullAddress}'");
+        }
+
+        private void WriteCsvByPropertyInfos(StringBuilder builder, PropertyInfo[] propertyInfos, object obj)
+        {
+            foreach(var propertyInfo in propertyInfos)
+            {
+                builder.Append($"{propertyInfo.GetValue(obj)}, ");
+            }
+            builder.AppendLine();
         }
     }
 }
