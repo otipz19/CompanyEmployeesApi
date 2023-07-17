@@ -9,7 +9,7 @@ namespace WebApi
         public MappingProfile()
         {
             CreateMap<Company, CompanyDto>()
-                .ForCtorParam("FullAddress", options =>
+                .ForMember(c => c.FullAddress, options =>
                 {
                     options.MapFrom(company => string.Join(' ', company.Country, company.Address));
                 });

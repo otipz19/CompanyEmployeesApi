@@ -16,8 +16,12 @@ namespace WebApi
             //LogManager.LoadConfiguration(string.Concat(Directory.GetCurrentDirectory(), "/nlog.config"));
             LogManager.Setup().LoadConfigurationFromFile();
 
-            builder.Services.AddControllers()
-                .AddApplicationPart(typeof(Presentation.AssemblyReference).Assembly);
+            builder.Services.AddControllers(config =>
+            {
+                config.RespectBrowserAcceptHeader = true;
+                config.ReturnHttpNotAcceptable = true;
+            }).AddXmlDataContractSerializerFormatters()
+            .AddApplicationPart(typeof(Presentation.AssemblyReference).Assembly);
 
             builder.Services.ConfigureCors()
                 .ConfigureIISIntegration();
