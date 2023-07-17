@@ -16,5 +16,11 @@ namespace Repository
                 .OrderBy(c => c.Name)
                 .ToListAsync();
         }
+
+        public async Task<Company> GetCompany(Guid id, bool asNoTracking)
+        {
+            return await GetByCondition(c => c.Id == id, asNoTracking)
+                .SingleOrDefaultAsync();
+        }
     }
 }

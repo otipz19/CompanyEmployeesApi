@@ -7,7 +7,7 @@ namespace Repository
     public abstract class RepositoryBase<T> : IRepositoryBase<T>
         where T : class
     {
-        protected readonly RepositoryContext _context;
+        private readonly RepositoryContext _context;
 
         protected RepositoryBase(RepositoryContext context)
         {

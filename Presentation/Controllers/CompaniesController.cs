@@ -1,5 +1,4 @@
-﻿using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using Service.Contracts;
 
 namespace Presentation.Controllers
@@ -18,7 +17,15 @@ namespace Presentation.Controllers
         [HttpGet]
         public async Task<ActionResult> GetCompanies()
         {
-            return Ok(await _services.CompanyService.GetAllCompanies(asNoTracking: true));
+            var companies = await _services.CompanyService.GetAllCompanies(asNoTracking: true);
+            return Ok(companies);
+        }
+
+        [HttpGet("{id:guid}")]
+        public async Task<ActionResult> GetCompany(Guid id)
+        {
+            var company = await _services.CompanyService.GetCompany(id, asNoTracking: true);
+            return Ok(company);
         }
     }
 }

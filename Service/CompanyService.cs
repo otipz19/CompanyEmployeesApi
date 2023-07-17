@@ -28,5 +28,18 @@ namespace Service
             var companiesDto = _mapper.Map<IEnumerable<CompanyDto>>(companies);
             return companiesDto;
         }
+
+        public async Task<CompanyDto> GetCompany(Guid id, bool asNoTracking)
+        {
+            var company = await _repositories.Companies.GetCompany(id, asNoTracking);
+
+            if(company == null)
+            {
+                //TODO
+            }
+
+            var companieDto = _mapper.Map<CompanyDto>(company);
+            return companieDto;
+        }
     }
 }
