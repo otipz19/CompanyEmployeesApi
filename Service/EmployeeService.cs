@@ -35,6 +35,21 @@ namespace Service
             return _mapper.Map<GetEmployeeDto>(employee);
         }
 
+        public async Task DeleteEmployeeForCompany(Guid companyId, Guid employeeId)
+        {
+            await CheckCompanyExists(companyId);
+
+            Employee? employee = await _repositories.Employees.GetEmployeeForCompany(companyId, employeeId, asNoTracking: false);
+
+            if(employee is null)
+            {
+                throw new EmployeeNotFoundException(companyId, employeeId);
+            }
+
+            _repositories.Employees.DeleteEmployee(employee);
+            await _repositories.SaveChangesAsync();
+        }
+
         public async Task<IEnumerable<GetEmployeeDto>> GetAllEmployeesForCompany(Guid companyId, bool asNoTracking)
         {
             await CheckCompanyExists(companyId);

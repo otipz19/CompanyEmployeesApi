@@ -52,5 +52,12 @@ namespace Presentation.Controllers
             string ids = string.Join(',', result.Select(c => c.Id.ToString()));
             return CreatedAtAction(nameof(GetCompaniesByIds), new { ids = ids }, result);
         }
+
+        [HttpDelete("{id:guid}")]
+        public async Task<ActionResult> DeleteCompany(Guid id)
+        {
+            await _services.CompanyService.DeleteCompany(id);
+            return NoContent();
+        }
     }
 }

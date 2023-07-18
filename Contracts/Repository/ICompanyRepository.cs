@@ -11,5 +11,7 @@ namespace Contracts.Repository
         public Task<Company?> GetCompany(Guid id, bool asNoTracking);
 
         public void CreateCompany(Company company);
+
+        public void DeleteCompany(Company company);
     }
 }

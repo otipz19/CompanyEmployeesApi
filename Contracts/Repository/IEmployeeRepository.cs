@@ -9,5 +9,7 @@ namespace Contracts.Repository
         public Task<Employee?> GetEmployeeForCompany(Guid companyId, Guid employeeId, bool asNoTracking);
 
         public void CreateEmployee(Employee employee, Guid companyId);
+
+        public void DeleteEmployee(Employee employee);
     }
 }

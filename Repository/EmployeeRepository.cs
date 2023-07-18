@@ -16,6 +16,11 @@ namespace Repository
             Create(employee);
         }
 
+        public void DeleteEmployee(Employee employee)
+        {
+            Delete(employee);
+        }
+
         public async Task<IEnumerable<Employee>> GetAllEmployeesForCompany(Guid companyId, bool asNoTracking)
         {
             IEnumerable<Employee> employees = await GetByCondition(e => e.CompanyId == companyId, asNoTracking)

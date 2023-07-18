@@ -72,6 +72,22 @@ namespace Service
 
         public async Task<GetCompanyDto> GetCompany(Guid id, bool asNoTracking)
         {
+            Company company = await CheckCompanyExists(id, asNoTracking);
+
+            var companieDto = _mapper.Map<GetCompanyDto>(company);
+            return companieDto;
+        }
+
+        public async Task DeleteCompany(Guid id)
+        {
+            Company company = await CheckCompanyExists(id, asNoTracking: false);
+
+            _repositories.Companies.DeleteCompany(company);
+            await _repositories.SaveChangesAsync();
+        }
+
+        private async Task<Company> CheckCompanyExists(Guid id, bool asNoTracking)
+        {
             Company? company = await _repositories.Companies.GetCompany(id, asNoTracking);
 
             if (company is null)
@@ -79,8 +95,7 @@ namespace Service
                 throw new CompanyNotFoundException(id);
             }
 
-            var companieDto = _mapper.Map<GetCompanyDto>(company);
-            return companieDto;
+            return company;
         }
     }
 }

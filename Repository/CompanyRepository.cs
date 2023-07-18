@@ -15,6 +15,11 @@ namespace Repository
             Create(company);
         }
 
+        public void DeleteCompany(Company company)
+        {
+            Delete(company);
+        }
+
         public async Task<IEnumerable<Company>> GetAllCompanies(bool asNoTracking)
         {
             return await GetAll(asNoTracking)

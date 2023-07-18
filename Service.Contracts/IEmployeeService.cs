@@ -9,5 +9,7 @@ namespace Service.Contracts
         public Task<GetEmployeeDto> GetEmployeeForCompany(Guid companyId, Guid employeeId, bool asNoTracking);
 
         public Task<GetEmployeeDto> CreateEmployeeForCompany(CreateEmployeeDto dto, Guid companyId);
+
+        public Task DeleteEmployeeForCompany(Guid companyId, Guid employeeId);
     }
 }

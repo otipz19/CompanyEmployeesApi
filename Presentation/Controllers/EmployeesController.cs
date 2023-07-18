@@ -37,5 +37,12 @@ namespace Presentation.Controllers
             GetEmployeeDto result = await _services.EmployeeService.CreateEmployeeForCompany(createDto, companyId);
             return CreatedAtAction(nameof(GetEmployeeForCompany), new { companyId = companyId, id = result.Id }, result);
         }
+
+        [HttpDelete("{id:guid}")]
+        public async Task<ActionResult> DeleteEmployee(Guid companyId, Guid id)
+        {
+            await _services.EmployeeService.DeleteEmployeeForCompany(companyId, id);
+            return NoContent();
+        }
     }
 }
