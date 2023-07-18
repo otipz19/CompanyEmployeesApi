@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Presentation.ModelBinders;
 using Service.Contracts;
 using Shared.DTO.Company;
 
@@ -23,7 +24,8 @@ namespace Presentation.Controllers
         }
 
         [HttpGet("collection/({ids})")]
-        public async Task<ActionResult> GetCompaniesByIds(IEnumerable<Guid> ids)
+        public async Task<ActionResult> GetCompaniesByIds([ModelBinder(BinderType = typeof(ArrayModelBinder))]
+            IEnumerable<Guid> ids)
         {
             IEnumerable<GetCompanyDto> companies = await _services.CompanyService.GetCompaniesByIds(ids, asNoTracking: true);
             return Ok(companies);
