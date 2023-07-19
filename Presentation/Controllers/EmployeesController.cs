@@ -1,6 +1,8 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.JsonPatch;
+using Microsoft.AspNetCore.Mvc;
 using Service.Contracts;
 using Shared.DTO.Employee;
+using Microsoft.AspNetCore.Mvc.NewtonsoftJson;
 
 namespace Presentation.Controllers
 {
@@ -18,16 +20,14 @@ namespace Presentation.Controllers
         [HttpGet]
         public async Task<ActionResult> GetEmployeesForCompany(Guid companyId)
         {
-            IEnumerable<GetEmployeeDto> employees = await _services.EmployeeService
-                .GetAllEmployeesOfCompany(companyId, asNoTracking: true);
+            IEnumerable<GetEmployeeDto> employees = await _services.EmployeeService.GetAllEmployeesOfCompany(companyId);
             return Ok(employees);
         }
 
         [HttpGet("{id:guid}")]
         public async Task<ActionResult> GetEmployeeForCompany(Guid companyId, Guid id)
         {
-            GetEmployeeDto employee = await _services.EmployeeService
-                .GetEmployeeOfCompany(companyId, id, asNoTracking: true);
+            GetEmployeeDto employee = await _services.EmployeeService.GetEmployeeOfCompany(companyId, id);
             return Ok(employee);
         }
 
@@ -42,7 +42,6 @@ namespace Presentation.Controllers
         public async Task<ActionResult> UpdateEmployee(Guid companyId, Guid id, UpdateEmployeeDto updateDto)
         {
             await _services.EmployeeService.UpdateEmployeeOfCompany(companyId, id, updateDto);
-
             return NoContent();
         }
 
@@ -50,6 +49,22 @@ namespace Presentation.Controllers
         public async Task<ActionResult> DeleteEmployee(Guid companyId, Guid id)
         {
             await _services.EmployeeService.DeleteEmployeeOfCompany(companyId, id);
+            return NoContent();
+        }
+
+        [HttpPatch("{id:guid}")]
+        public async Task<ActionResult> PartiallyUpdateEmployee(Guid companyId, Guid id,
+            JsonPatchDocument<UpdateEmployeeDto> patchDoc)
+        {
+            var toPatch = await _services.EmployeeService.GetEmployeeForPatch(companyId, id);
+
+            patchDoc.ApplyTo(toPatch.dto, ModelState);
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            await _services.EmployeeService.SaveChangesForPatch(toPatch.dto, toPatch.entity);
             return NoContent();
         }
     }

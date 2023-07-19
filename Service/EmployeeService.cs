@@ -66,5 +66,22 @@ namespace Service
             GetEmployeeDto employeeDto = _mapper.Map<GetEmployeeDto>(employee);
             return employeeDto;
         }
+
+        public async Task<(UpdateEmployeeDto dto, Employee entity)> GetEmployeeForPatch(Guid companyId, Guid employeeId)
+        {
+            await GetCompanyIfExistsAsNoTracking(companyId);
+
+            Employee entity = await GetEmployeeIfExists(companyId, employeeId);
+
+            UpdateEmployeeDto dto  = _mapper.Map<UpdateEmployeeDto>(entity);
+
+            return (dto, entity);
+        }
+
+        public async Task SaveChangesForPatch(UpdateEmployeeDto dto, Employee entity)
+        {
+            _mapper.Map(dto, entity);
+            await _repositories.SaveChangesAsync();
+        }
     }
 }

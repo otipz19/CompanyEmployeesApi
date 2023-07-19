@@ -1,4 +1,5 @@
-﻿using Shared.DTO.Company;
+﻿using Entities.Models;
+using Shared.DTO.Company;
 
 namespace Service.Contracts
 {
@@ -17,5 +18,9 @@ namespace Service.Contracts
         public Task UpdateCompany(Guid id, UpdateCompanyDto dto);
 
         public Task DeleteCompany(Guid id);
+
+        public Task<(UpdateCompanyDto dto, Company entity)> GetCompanyForPatch(Guid id);
+
+        public Task SaveChangesForPatch(UpdateCompanyDto dto, Company entity);
     }
 }

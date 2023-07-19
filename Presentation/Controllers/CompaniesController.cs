@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.JsonPatch;
+using Microsoft.AspNetCore.Mvc;
 using Presentation.ModelBinders;
 using Service.Contracts;
 using Shared.DTO.Company;
@@ -64,6 +65,21 @@ namespace Presentation.Controllers
         public async Task<ActionResult> DeleteCompany(Guid id)
         {
             await _services.CompanyService.DeleteCompany(id);
+            return NoContent();
+        }
+
+        [HttpPatch("{id:guid}")]
+        public async Task<ActionResult> PartiallyUpdateCompany(Guid id, JsonPatchDocument<UpdateCompanyDto> patchDoc)
+        {
+            var toPatch = await _services.CompanyService.GetCompanyForPatch(id);
+
+            patchDoc.ApplyTo(toPatch.dto, ModelState);
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            await _services.CompanyService.SaveChangesForPatch(toPatch.dto, toPatch.entity);
             return NoContent();
         }
     }

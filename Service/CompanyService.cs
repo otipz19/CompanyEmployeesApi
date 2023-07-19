@@ -85,5 +85,18 @@ namespace Service
             var companieDto = _mapper.Map<GetCompanyDto>(company);
             return companieDto;
         }
+
+        public async Task<(UpdateCompanyDto dto, Company entity)> GetCompanyForPatch(Guid id)
+        {
+            Company company = await GetCompanyIfExists(id);
+            UpdateCompanyDto dto = _mapper.Map<UpdateCompanyDto>(company);
+            return (dto , company);
+        }
+
+        public async Task SaveChangesForPatch(UpdateCompanyDto dto, Company entity)
+        {
+            _mapper.Map(dto, entity);
+            await _repositories.SaveChangesAsync();
+        }
     }
 }

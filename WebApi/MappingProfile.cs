@@ -17,7 +17,7 @@ namespace WebApi
         {
             CreateMap<Employee, GetEmployeeDto>();
             CreateMap<CreateEmployeeDto, Employee>();
-            CreateMap<UpdateEmployeeDto, Employee>();
+            CreateMap<UpdateEmployeeDto, Employee>().ReverseMap();
         }
 
         private void MapCompany()
@@ -28,7 +28,7 @@ namespace WebApi
                                 options.MapFrom(company => string.Join(' ', company.Country, company.Address));
                             });
             CreateMap<CreateCompanyDto, Company>();
-            CreateMap<UpdateCompanyDto, Company>();
+            CreateMap<UpdateCompanyDto, Company>().ReverseMap();
         }
     }
 }

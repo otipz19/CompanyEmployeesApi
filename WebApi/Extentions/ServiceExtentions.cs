@@ -1,8 +1,11 @@
 ﻿using Contracts.LoggerService;
 using Contracts.Repository;
 using LoggerService;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Formatters;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Options;
 using Repository;
 using Service;
 using Service.Contracts;
@@ -56,11 +59,28 @@ namespace WebApi.Extentions
             {
                 config.RespectBrowserAcceptHeader = true;
                 config.ReturnHttpNotAcceptable = true;
+                config.InputFormatters.Insert(0, GetJsonPatchInputFormatter());
             }).AddXmlDataContractSerializerFormatters()
             .AddMvcOptions(config =>
             {
                 config.OutputFormatters.Add(new CsvOutputFormatter());
             });
+
+            NewtonsoftJsonPatchInputFormatter GetJsonPatchInputFormatter()
+            {
+                IServiceProvider serviceProvider = new ServiceCollection()
+                    .AddLogging()
+                    .AddMvc()
+                    .AddNewtonsoftJson()
+                    .Services.BuildServiceProvider();
+
+                return serviceProvider
+                    .GetRequiredService<IOptions<MvcOptions>>()
+                    .Value
+                    .InputFormatters
+                    .OfType<NewtonsoftJsonPatchInputFormatter>()
+                    .First();
+            }
         }
     }
 }

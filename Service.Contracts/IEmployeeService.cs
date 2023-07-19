@@ -1,4 +1,5 @@
-﻿using Shared.DTO.Employee;
+﻿using Entities.Models;
+using Shared.DTO.Employee;
 
 namespace Service.Contracts
 {
@@ -13,5 +14,9 @@ namespace Service.Contracts
         public Task DeleteEmployeeOfCompany(Guid companyId, Guid employeeId);
 
         public Task UpdateEmployeeOfCompany(Guid companyId, Guid employeeId, UpdateEmployeeDto dto);
+
+        public Task<(UpdateEmployeeDto dto, Employee entity)> GetEmployeeForPatch(Guid companyId, Guid employeeId);
+
+        public Task SaveChangesForPatch(UpdateEmployeeDto dto, Employee entity);
     }
 }
