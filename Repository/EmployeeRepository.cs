@@ -21,7 +21,7 @@ namespace Repository
             Delete(employee);
         }
 
-        public async Task<IEnumerable<Employee>> GetAllEmployeesForCompany(Guid companyId, bool asNoTracking)
+        public async Task<IEnumerable<Employee>> GetAllEmployeesOfCompany(Guid companyId, bool asNoTracking)
         {
             IEnumerable<Employee> employees = await GetByCondition(e => e.CompanyId == companyId, asNoTracking)
                 .OrderBy(e => e.Name)
@@ -30,7 +30,7 @@ namespace Repository
             return employees;
         }
 
-        public async Task<Employee?> GetEmployeeForCompany(Guid companyId, Guid employeeId, bool asNoTracking)
+        public async Task<Employee?> GetEmployeeOfCompany(Guid companyId, Guid employeeId, bool asNoTracking)
         {
             Employee? employee = await GetByCondition(e => e.CompanyId == companyId && e.Id == employeeId, asNoTracking)
                 .SingleOrDefaultAsync();

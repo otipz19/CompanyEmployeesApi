@@ -19,7 +19,7 @@ namespace Presentation.Controllers
         [HttpGet]
         public async Task<ActionResult> GetCompanies()
         {
-            IEnumerable<GetCompanyDto> companies = await _services.CompanyService.GetAllCompanies(asNoTracking: true);
+            IEnumerable<GetCompanyDto> companies = await _services.CompanyService.GetAllCompanies();
             return Ok(companies);
         }
 
@@ -27,14 +27,14 @@ namespace Presentation.Controllers
         public async Task<ActionResult> GetCompaniesByIds([ModelBinder(BinderType = typeof(ArrayModelBinder))]
             IEnumerable<Guid> ids)
         {
-            IEnumerable<GetCompanyDto> companies = await _services.CompanyService.GetCompaniesByIds(ids, asNoTracking: true);
+            IEnumerable<GetCompanyDto> companies = await _services.CompanyService.GetCompaniesByIds(ids);
             return Ok(companies);
         }
 
         [HttpGet("{id:guid}")]
         public async Task<ActionResult> GetCompany(Guid id)
         {
-            GetCompanyDto company = await _services.CompanyService.GetCompany(id, asNoTracking: true);
+            GetCompanyDto company = await _services.CompanyService.GetCompany(id);
             return Ok(company);
         }
 

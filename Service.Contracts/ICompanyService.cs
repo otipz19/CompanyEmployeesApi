@@ -4,11 +4,11 @@ namespace Service.Contracts
 {
     public interface ICompanyService
     {
-        public Task<IEnumerable<GetCompanyDto>> GetAllCompanies(bool asNoTracking);
+        public Task<IEnumerable<GetCompanyDto>> GetAllCompanies();
 
-        public Task<IEnumerable<GetCompanyDto>> GetCompaniesByIds(IEnumerable<Guid> ids, bool asNoTracking);
+        public Task<IEnumerable<GetCompanyDto>> GetCompaniesByIds(IEnumerable<Guid> ids);
 
-        public Task<GetCompanyDto> GetCompany(Guid id, bool asNoTracking);
+        public Task<GetCompanyDto> GetCompany(Guid id);
 
         public Task<GetCompanyDto> CreateCompany(CreateCompanyDto dto);
 

@@ -19,7 +19,7 @@ namespace Presentation.Controllers
         public async Task<ActionResult> GetEmployeesForCompany(Guid companyId)
         {
             IEnumerable<GetEmployeeDto> employees = await _services.EmployeeService
-                .GetAllEmployeesForCompany(companyId, asNoTracking: true);
+                .GetAllEmployeesOfCompany(companyId, asNoTracking: true);
             return Ok(employees);
         }
 
@@ -27,21 +27,21 @@ namespace Presentation.Controllers
         public async Task<ActionResult> GetEmployeeForCompany(Guid companyId, Guid id)
         {
             GetEmployeeDto employee = await _services.EmployeeService
-                .GetEmployeeForCompany(companyId, id, asNoTracking: true);
+                .GetEmployeeOfCompany(companyId, id, asNoTracking: true);
             return Ok(employee);
         }
 
         [HttpPost]
         public async Task<ActionResult> CreateEmployee(CreateEmployeeDto createDto, Guid companyId)
         {
-            GetEmployeeDto result = await _services.EmployeeService.CreateEmployeeForCompany(createDto, companyId);
+            GetEmployeeDto result = await _services.EmployeeService.CreateEmployeeOfCompany(createDto, companyId);
             return CreatedAtAction(nameof(GetEmployeeForCompany), new { companyId = companyId, id = result.Id }, result);
         }
 
         [HttpPut("{id:guid}")]
         public async Task<ActionResult> UpdateEmployee(Guid companyId, Guid id, UpdateEmployeeDto updateDto)
         {
-            await _services.EmployeeService.UpdateEmployeeForCompany(companyId, id, updateDto);
+            await _services.EmployeeService.UpdateEmployeeOfCompany(companyId, id, updateDto);
 
             return NoContent();
         }
@@ -49,7 +49,7 @@ namespace Presentation.Controllers
         [HttpDelete("{id:guid}")]
         public async Task<ActionResult> DeleteEmployee(Guid companyId, Guid id)
         {
-            await _services.EmployeeService.DeleteEmployeeForCompany(companyId, id);
+            await _services.EmployeeService.DeleteEmployeeOfCompany(companyId, id);
             return NoContent();
         }
     }

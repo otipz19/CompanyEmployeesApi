@@ -8,24 +8,14 @@ using Shared.DTO.Employee;
 
 namespace Service
 {
-    public class EmployeeService : IEmployeeService
+    public class EmployeeService : BaseService, IEmployeeService
     {
-        private readonly IRepositoryManager _repositories;
-        private readonly ILoggerManager _logger;
-        private readonly IMapper _mapper;
+        public EmployeeService(IRepositoryManager repositoryManager, IMapper mapper)
+            : base(repositoryManager, mapper) { }
 
-        public EmployeeService(ILoggerManager loggerManager,
-            IRepositoryManager repositoryManager,
-            IMapper mapper)
+        public async Task<GetEmployeeDto> CreateEmployeeOfCompany(CreateEmployeeDto dto, Guid companyId)
         {
-            _logger = loggerManager;
-            _repositories = repositoryManager;
-            _mapper = mapper;
-        }
-
-        public async Task<GetEmployeeDto> CreateEmployeeForCompany(CreateEmployeeDto dto, Guid companyId)
-        {
-            await GetCompanyIfExists(companyId);
+            await GetCompanyIfExistsAsNoTracking(companyId);
 
             Employee employee = _mapper.Map<Employee>(dto);
 
@@ -35,66 +25,46 @@ namespace Service
             return _mapper.Map<GetEmployeeDto>(employee);
         }
 
-        public async Task UpdateEmployeeForCompany(Guid companyId, Guid employeeId, UpdateEmployeeDto dto)
+        public async Task UpdateEmployeeOfCompany(Guid companyId, Guid employeeId, UpdateEmployeeDto dto)
         {
-            await GetCompanyIfExists(companyId);
+            await GetCompanyIfExistsAsNoTracking(companyId);
 
-            Employee employee = await GetEmployeeIfExists(companyId, employeeId, asNoTracking: false);
+            Employee employee = await GetEmployeeIfExists(companyId, employeeId);
 
             _mapper.Map(dto, employee);
 
             await _repositories.SaveChangesAsync();
         }
 
-        public async Task DeleteEmployeeForCompany(Guid companyId, Guid employeeId)
+        public async Task DeleteEmployeeOfCompany(Guid companyId, Guid employeeId)
         {
-            await GetCompanyIfExists(companyId);
+            await GetCompanyIfExistsAsNoTracking(companyId);
 
-            Employee employee = await GetEmployeeIfExists(companyId, employeeId, asNoTracking: false);
+            Employee employee = await GetEmployeeIfExists(companyId, employeeId);
 
             _repositories.Employees.DeleteEmployee(employee);
             await _repositories.SaveChangesAsync();
         }
 
-        public async Task<IEnumerable<GetEmployeeDto>> GetAllEmployeesForCompany(Guid companyId, bool asNoTracking)
+        public async Task<IEnumerable<GetEmployeeDto>> GetAllEmployeesOfCompany(Guid companyId)
         {
-            await GetCompanyIfExists(companyId);
+            await GetCompanyIfExistsAsNoTracking(companyId);
 
             IEnumerable<Employee> employees = await _repositories.Employees
-                .GetAllEmployeesForCompany(companyId, asNoTracking);
+                .GetAllEmployeesOfCompany(companyId, asNoTracking: true);
 
             IEnumerable<GetEmployeeDto> employeeDtos = _mapper.Map<IEnumerable<GetEmployeeDto>>(employees);
             return employeeDtos;
         }
 
-        public async Task<GetEmployeeDto> GetEmployeeForCompany(Guid companyId, Guid employeeId, bool asNoTracking)
+        public async Task<GetEmployeeDto> GetEmployeeOfCompany(Guid companyId, Guid employeeId)
         {
-            await GetCompanyIfExists(companyId);
+            await GetCompanyIfExistsAsNoTracking(companyId);
 
-            Employee employee = await GetEmployeeIfExists(companyId, employeeId, asNoTracking);
+            Employee employee = await GetEmployeeIfExists(companyId, employeeId);
 
             GetEmployeeDto employeeDto = _mapper.Map<GetEmployeeDto>(employee);
             return employeeDto;
-        }
-
-        private async Task<Company> GetCompanyIfExists(Guid companyId)
-        {
-            Company? company = await _repositories.Companies.GetCompany(companyId, asNoTracking: true);
-            if (company is null)
-            {
-                throw new CompanyNotFoundException(companyId);
-            }
-            return company;
-        }
-
-        private async Task<Employee> GetEmployeeIfExists(Guid companyId, Guid employeeId, bool asNoTracking)
-        {
-            Employee? employee = await _repositories.Employees.GetEmployeeForCompany(companyId, employeeId, asNoTracking);
-            if (employee is null)
-            {
-                throw new EmployeeNotFoundException(companyId, employeeId);
-            }
-            return employee;
         }
     }
 }

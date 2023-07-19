@@ -9,20 +9,10 @@ using System.Formats.Asn1;
 
 namespace Service
 {
-    public class CompanyService : ICompanyService
+    public class CompanyService : BaseService, ICompanyService
     {
-        private readonly IRepositoryManager _repositories;
-        private readonly ILoggerManager _logger;
-        private readonly IMapper _mapper;
-
-        public CompanyService(ILoggerManager loggerManager,
-            IRepositoryManager repositoryManager,
-            IMapper mapper)
-        {
-            _logger = loggerManager;
-            _repositories = repositoryManager;
-            _mapper = mapper;
-        }
+        public CompanyService(IRepositoryManager repositoryManager, IMapper mapper)
+            : base(repositoryManager, mapper) { }
 
         public async Task<GetCompanyDto> CreateCompany(CreateCompanyDto dto)
         {
@@ -52,7 +42,7 @@ namespace Service
 
         public async Task UpdateCompany(Guid id, UpdateCompanyDto dto)
         {
-            Company company = await GetCompanyIfExists(id, asNoTracking: false);
+            Company company = await GetCompanyIfExists(id);
 
             _mapper.Map(dto, company);
 
@@ -61,25 +51,25 @@ namespace Service
 
         public async Task DeleteCompany(Guid id)
         {
-            Company company = await GetCompanyIfExists(id, asNoTracking: false);
+            Company company = await GetCompanyIfExists(id);
 
             _repositories.Companies.DeleteCompany(company);
             await _repositories.SaveChangesAsync();
         }
 
-        public async Task<IEnumerable<GetCompanyDto>> GetAllCompanies(bool asNoTracking)
+        public async Task<IEnumerable<GetCompanyDto>> GetAllCompanies()
         {
-            IEnumerable<Company> companies = await _repositories.Companies.GetAllCompanies(asNoTracking);
+            IEnumerable<Company> companies = await _repositories.Companies.GetAllCompanies(asNoTracking: true);
             IEnumerable<GetCompanyDto> companiesDto = _mapper.Map<IEnumerable<GetCompanyDto>>(companies);
             return companiesDto;
         }
 
-        public async Task<IEnumerable<GetCompanyDto>> GetCompaniesByIds(IEnumerable<Guid>? ids, bool asNoTracking)
+        public async Task<IEnumerable<GetCompanyDto>> GetCompaniesByIds(IEnumerable<Guid>? ids)
         {
             if (ids is null)
                 throw new IdParametersBadRequestException();
 
-            IEnumerable<Company> companies = await _repositories.Companies.GetCompaniesByIds(ids, asNoTracking);
+            IEnumerable<Company> companies = await _repositories.Companies.GetCompaniesByIds(ids, asNoTracking: true);
 
             if (companies.Count() != ids.Count())
                 throw new CollectionByIdsBadRequestException();
@@ -88,24 +78,12 @@ namespace Service
             return getCompanyDtos;
         }
 
-        public async Task<GetCompanyDto> GetCompany(Guid id, bool asNoTracking)
+        public async Task<GetCompanyDto> GetCompany(Guid id)
         {
-            Company company = await GetCompanyIfExists(id, asNoTracking);
+            Company company = await GetCompanyIfExists(id);
 
             var companieDto = _mapper.Map<GetCompanyDto>(company);
             return companieDto;
-        }
-
-        private async Task<Company> GetCompanyIfExists(Guid id, bool asNoTracking)
-        {
-            Company? company = await _repositories.Companies.GetCompany(id, asNoTracking);
-
-            if (company is null)
-            {
-                throw new CompanyNotFoundException(id);
-            }
-
-            return company;
         }
     }
 }
