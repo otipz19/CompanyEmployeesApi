@@ -9,17 +9,26 @@ namespace WebApi
     {
         public MappingProfile()
         {
-            CreateMap<Company, GetCompanyDto>()
-                .ForMember(c => c.FullAddress, options =>
-                {
-                    options.MapFrom(company => string.Join(' ', company.Country, company.Address));
-                });
+            MapCompany();
+            MapEmployee();
+        }
 
-            CreateMap<CreateCompanyDto, Company>();
-
+        private void MapEmployee()
+        {
             CreateMap<Employee, GetEmployeeDto>();
-
             CreateMap<CreateEmployeeDto, Employee>();
+            CreateMap<UpdateEmployeeDto, Employee>();
+        }
+
+        private void MapCompany()
+        {
+            CreateMap<Company, GetCompanyDto>()
+                            .ForMember(c => c.FullAddress, options =>
+                            {
+                                options.MapFrom(company => string.Join(' ', company.Country, company.Address));
+                            });
+            CreateMap<CreateCompanyDto, Company>();
+            CreateMap<UpdateCompanyDto, Company>();
         }
     }
 }

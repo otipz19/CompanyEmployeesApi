@@ -38,6 +38,14 @@ namespace Presentation.Controllers
             return CreatedAtAction(nameof(GetEmployeeForCompany), new { companyId = companyId, id = result.Id }, result);
         }
 
+        [HttpPut("{id:guid}")]
+        public async Task<ActionResult> UpdateEmployee(Guid companyId, Guid id, UpdateEmployeeDto updateDto)
+        {
+            await _services.EmployeeService.UpdateEmployeeForCompany(companyId, id, updateDto);
+
+            return NoContent();
+        }
+
         [HttpDelete("{id:guid}")]
         public async Task<ActionResult> DeleteEmployee(Guid companyId, Guid id)
         {

@@ -11,5 +11,7 @@ namespace Service.Contracts
         public Task<GetEmployeeDto> CreateEmployeeForCompany(CreateEmployeeDto dto, Guid companyId);
 
         public Task DeleteEmployeeForCompany(Guid companyId, Guid employeeId);
+
+        public Task UpdateEmployeeForCompany(Guid companyId, Guid employeeId, UpdateEmployeeDto dto);
     }
 }

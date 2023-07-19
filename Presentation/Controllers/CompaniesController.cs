@@ -53,6 +53,13 @@ namespace Presentation.Controllers
             return CreatedAtAction(nameof(GetCompaniesByIds), new { ids = ids }, result);
         }
 
+        [HttpPut("{id:guid}")]
+        public async Task<ActionResult> UpdateCompany(Guid id, UpdateCompanyDto updateDto)
+        {
+            await _services.CompanyService.UpdateCompany(id, updateDto);
+            return NoContent();
+        }
+
         [HttpDelete("{id:guid}")]
         public async Task<ActionResult> DeleteCompany(Guid id)
         {

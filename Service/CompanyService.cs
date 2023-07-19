@@ -5,6 +5,7 @@ using Entities.Exceptions;
 using Entities.Models;
 using Service.Contracts;
 using Shared.DTO.Company;
+using System.Formats.Asn1;
 
 namespace Service
 {
@@ -49,6 +50,23 @@ namespace Service
             return _mapper.Map<IEnumerable<GetCompanyDto>>(companies);
         }
 
+        public async Task UpdateCompany(Guid id, UpdateCompanyDto dto)
+        {
+            Company company = await GetCompanyIfExists(id, asNoTracking: false);
+
+            _mapper.Map(dto, company);
+
+            await _repositories.SaveChangesAsync();
+        }
+
+        public async Task DeleteCompany(Guid id)
+        {
+            Company company = await GetCompanyIfExists(id, asNoTracking: false);
+
+            _repositories.Companies.DeleteCompany(company);
+            await _repositories.SaveChangesAsync();
+        }
+
         public async Task<IEnumerable<GetCompanyDto>> GetAllCompanies(bool asNoTracking)
         {
             IEnumerable<Company> companies = await _repositories.Companies.GetAllCompanies(asNoTracking);
@@ -72,21 +90,13 @@ namespace Service
 
         public async Task<GetCompanyDto> GetCompany(Guid id, bool asNoTracking)
         {
-            Company company = await CheckCompanyExists(id, asNoTracking);
+            Company company = await GetCompanyIfExists(id, asNoTracking);
 
             var companieDto = _mapper.Map<GetCompanyDto>(company);
             return companieDto;
         }
 
-        public async Task DeleteCompany(Guid id)
-        {
-            Company company = await CheckCompanyExists(id, asNoTracking: false);
-
-            _repositories.Companies.DeleteCompany(company);
-            await _repositories.SaveChangesAsync();
-        }
-
-        private async Task<Company> CheckCompanyExists(Guid id, bool asNoTracking)
+        private async Task<Company> GetCompanyIfExists(Guid id, bool asNoTracking)
         {
             Company? company = await _repositories.Companies.GetCompany(id, asNoTracking);
 

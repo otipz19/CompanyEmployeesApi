@@ -14,6 +14,8 @@ namespace Service.Contracts
 
         public Task<IEnumerable<GetCompanyDto>> CreateCompaniesCollection(IEnumerable<CreateCompanyDto> dtos);
 
+        public Task UpdateCompany(Guid id, UpdateCompanyDto dto);
+
         public Task DeleteCompany(Guid id);
     }
 }
