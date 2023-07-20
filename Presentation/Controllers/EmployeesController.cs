@@ -4,6 +4,8 @@ using Service.Contracts;
 using Shared.DTO.Employee;
 using Microsoft.AspNetCore.Mvc.NewtonsoftJson;
 using Presentation.ActionFilters;
+using Shared.DTO.RequestFeatures.Paging;
+using System.Text.Json;
 
 namespace Presentation.Controllers
 {
@@ -19,14 +21,19 @@ namespace Presentation.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult> GetEmployeesForCompany(Guid companyId)
+        public async Task<ActionResult> GetEmployeesOfCompany(Guid companyId,
+            [FromQuery]EmployeePagingParameters pagingParameters)
         {
-            IEnumerable<GetEmployeeDto> employees = await _services.EmployeeService.GetAllEmployeesOfCompany(companyId);
-            return Ok(employees);
+            PagedList<GetEmployeeDto> pagedResult = await _services.EmployeeService
+                .GetEmployeesOfCompany(companyId, pagingParameters);
+
+            Response.Headers.Add("X-Pagination", JsonSerializer.Serialize(pagedResult.MetaData));
+
+            return Ok(pagedResult.Items);
         }
 
         [HttpGet("{id:guid}")]
-        public async Task<ActionResult> GetEmployeeForCompany(Guid companyId, Guid id)
+        public async Task<ActionResult> GetEmployeeOfCompany(Guid companyId, Guid id)
         {
             GetEmployeeDto employee = await _services.EmployeeService.GetEmployeeOfCompany(companyId, id);
             return Ok(employee);
@@ -37,7 +44,7 @@ namespace Presentation.Controllers
         public async Task<ActionResult> CreateEmployee(Guid companyId, CreateEmployeeDto createDto)
         {
             GetEmployeeDto result = await _services.EmployeeService.CreateEmployeeOfCompany(createDto, companyId);
-            return CreatedAtAction(nameof(GetEmployeeForCompany), new { companyId = companyId, id = result.Id }, result);
+            return CreatedAtAction(nameof(GetEmployeeOfCompany), new { companyId = companyId, id = result.Id }, result);
         }
 
         [HttpPut("{id:guid}")]

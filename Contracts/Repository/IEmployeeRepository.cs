@@ -1,10 +1,13 @@
 ﻿using Entities.Models;
+using Shared.DTO.RequestFeatures.Paging;
 
 namespace Contracts.Repository
 {
     public interface IEmployeeRepository
     {
-        public Task<IEnumerable<Employee>> GetAllEmployeesOfCompany(Guid companyId, bool asNoTracking);
+        public Task<PagedList<Employee>> GetEmployeesOfCompany(Guid companyId,
+            EmployeePagingParameters pagingParameters,
+            bool asNoTracking);
 
         public Task<Employee?> GetEmployeeOfCompany(Guid companyId, Guid employeeId, bool asNoTracking);
 

@@ -1,6 +1,7 @@
 ﻿using Contracts.Repository;
 using Entities.Models;
 using Microsoft.EntityFrameworkCore;
+using Shared.DTO.RequestFeatures.Paging;
 
 namespace Repository
 {
@@ -20,19 +21,19 @@ namespace Repository
             Delete(company);
         }
 
-        public async Task<IEnumerable<Company>> GetAllCompanies(bool asNoTracking)
+        public async Task<PagedList<Company>> GetCompanies(bool asNoTracking, CompanyPagingParameters pagingParameters)
         {
-            return await GetAll(asNoTracking)
-                .OrderBy(c => c.Name)
-                .ToListAsync();
+            IQueryable<Company> companies = GetAll(asNoTracking).OrderBy(c => c.Name);
+            var pagedResult = await PagedList<Company>.CreateAsync(companies, pagingParameters);
+            return pagedResult;
         }
 
-        public async Task<IEnumerable<Company>> GetCompaniesByIds(IEnumerable<Guid> ids, bool asNoTracking)
+        public async Task<PagedList<Company>> GetCompaniesByIds(IEnumerable<Guid> ids, bool asNoTracking,
+            CompanyPagingParameters pagingParameters)
         {
-            IEnumerable<Company> companies = await GetByCondition(c => ids.Contains(c.Id), asNoTracking)
-                .OrderBy(c => c.Name)
-                .ToListAsync();
-            return companies;
+            IQueryable<Company> companies = GetByCondition(c => ids.Contains(c.Id), asNoTracking).OrderBy(c => c.Name);
+            var pagedResult = await PagedList<Company>.CreateAsync(companies, pagingParameters);
+            return pagedResult;
         }
 
         public async Task<Company?> GetCompany(Guid id, bool asNoTracking)

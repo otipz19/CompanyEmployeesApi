@@ -5,6 +5,7 @@ using Entities.Exceptions;
 using Entities.Models;
 using Service.Contracts;
 using Shared.DTO.Company;
+using Shared.DTO.RequestFeatures.Paging;
 using System.Formats.Asn1;
 
 namespace Service
@@ -57,25 +58,33 @@ namespace Service
             await _repositories.SaveChangesAsync();
         }
 
-        public async Task<IEnumerable<GetCompanyDto>> GetAllCompanies()
+        public async Task<PagedList<GetCompanyDto>> GetCompanies(CompanyPagingParameters pagingParameters) 
         {
-            IEnumerable<Company> companies = await _repositories.Companies.GetAllCompanies(asNoTracking: true);
-            IEnumerable<GetCompanyDto> companiesDto = _mapper.Map<IEnumerable<GetCompanyDto>>(companies);
-            return companiesDto;
+            PagedList<Company> pagedCompanies = await _repositories.Companies
+                .GetCompanies(asNoTracking: true, pagingParameters);
+
+            IEnumerable<GetCompanyDto> companiesDtos = _mapper.Map<IEnumerable<GetCompanyDto>>(pagedCompanies.Items);
+            var pagedDtos = new PagedList<GetCompanyDto>(companiesDtos, pagedCompanies.MetaData);
+
+            return pagedDtos;
         }
 
-        public async Task<IEnumerable<GetCompanyDto>> GetCompaniesByIds(IEnumerable<Guid>? ids)
+        public async Task<PagedList<GetCompanyDto>> GetCompaniesByIds(IEnumerable<Guid>? ids,
+            CompanyPagingParameters pagingParameters)
         {
             if (ids is null)
                 throw new IdParametersBadRequestException();
 
-            IEnumerable<Company> companies = await _repositories.Companies.GetCompaniesByIds(ids, asNoTracking: true);
+            PagedList<Company> pagedCompanies = await _repositories.Companies
+                .GetCompaniesByIds(ids, asNoTracking: true, pagingParameters);
 
-            if (companies.Count() != ids.Count())
+            if (pagedCompanies.MetaData.TotalCount != ids.Count())
                 throw new CollectionByIdsBadRequestException();
 
-            IEnumerable<GetCompanyDto> getCompanyDtos = _mapper.Map<IEnumerable<GetCompanyDto>>(companies);
-            return getCompanyDtos;
+            IEnumerable<GetCompanyDto> companiesDtos = _mapper.Map<IEnumerable<GetCompanyDto>>(pagedCompanies.Items);
+            var pagedDtos = new PagedList<GetCompanyDto>(companiesDtos, pagedCompanies.MetaData);
+
+            return pagedDtos;
         }
 
         public async Task<GetCompanyDto> GetCompany(Guid id)

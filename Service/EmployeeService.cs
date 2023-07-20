@@ -5,6 +5,7 @@ using Entities.Exceptions;
 using Entities.Models;
 using Service.Contracts;
 using Shared.DTO.Employee;
+using Shared.DTO.RequestFeatures.Paging;
 
 namespace Service
 {
@@ -46,15 +47,17 @@ namespace Service
             await _repositories.SaveChangesAsync();
         }
 
-        public async Task<IEnumerable<GetEmployeeDto>> GetAllEmployeesOfCompany(Guid companyId)
+        public async Task<PagedList<GetEmployeeDto>> GetEmployeesOfCompany(Guid companyId,
+            EmployeePagingParameters pagingParameters)
         {
             await GetCompanyIfExistsAsNoTracking(companyId);
 
-            IEnumerable<Employee> employees = await _repositories.Employees
-                .GetAllEmployeesOfCompany(companyId, asNoTracking: true);
+            PagedList<Employee> pagedEmployees = await _repositories.Employees
+                .GetEmployeesOfCompany(companyId, pagingParameters, asNoTracking: true);
 
-            IEnumerable<GetEmployeeDto> employeeDtos = _mapper.Map<IEnumerable<GetEmployeeDto>>(employees);
-            return employeeDtos;
+            IEnumerable<GetEmployeeDto> employeeDtos = _mapper.Map<IEnumerable<GetEmployeeDto>>(pagedEmployees.Items);
+            PagedList<GetEmployeeDto> pagedDtos = new(employeeDtos, pagedEmployees.MetaData);
+            return pagedDtos;
         }
 
         public async Task<GetEmployeeDto> GetEmployeeOfCompany(Guid companyId, Guid employeeId)

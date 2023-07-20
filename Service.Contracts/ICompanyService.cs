@@ -1,13 +1,15 @@
 ﻿using Entities.Models;
 using Shared.DTO.Company;
+using Shared.DTO.RequestFeatures.Paging;
 
 namespace Service.Contracts
 {
     public interface ICompanyService
     {
-        public Task<IEnumerable<GetCompanyDto>> GetAllCompanies();
+        public Task<PagedList<GetCompanyDto>> GetCompanies(CompanyPagingParameters pagingParameters);
 
-        public Task<IEnumerable<GetCompanyDto>> GetCompaniesByIds(IEnumerable<Guid> ids);
+        public Task<PagedList<GetCompanyDto>> GetCompaniesByIds(IEnumerable<Guid> ids,
+            CompanyPagingParameters pagingParameters);
 
         public Task<GetCompanyDto> GetCompany(Guid id);
 

@@ -24,7 +24,8 @@ namespace WebApi.Extensions
                 options.AddPolicy(CorsPolicy, builder =>
                     builder.AllowAnyOrigin()
                         .AllowAnyMethod()
-                        .AllowAnyHeader());
+                        .AllowAnyHeader()
+                        .WithExposedHeaders("X-Pagination"));
             });
         }
 
