@@ -23,8 +23,7 @@ namespace WebApi
             builder.Services.ConfigureCors()
                 .ConfigureIISIntegration();
 
-            builder.Services.AddServices()
-                .AddFilters();
+            builder.Services.AddServices();
 
             builder.Services.AddRepositoryContext(builder.Configuration)
                 .AddRepositories();

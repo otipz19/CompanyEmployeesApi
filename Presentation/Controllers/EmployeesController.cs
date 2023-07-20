@@ -33,7 +33,7 @@ namespace Presentation.Controllers
         }
 
         [HttpPost]
-        [ServiceFilter(typeof(ValidationFilterAttribute))]
+        [ValidateArguments]
         public async Task<ActionResult> CreateEmployee(Guid companyId, CreateEmployeeDto createDto)
         {
             GetEmployeeDto result = await _services.EmployeeService.CreateEmployeeOfCompany(createDto, companyId);
@@ -41,7 +41,7 @@ namespace Presentation.Controllers
         }
 
         [HttpPut("{id:guid}")]
-        [ServiceFilter(typeof(ValidationFilterAttribute))]
+        [ValidateArguments]
         public async Task<ActionResult> UpdateEmployee(Guid companyId, Guid id, UpdateEmployeeDto updateDto)
         {
             await _services.EmployeeService.UpdateEmployeeOfCompany(companyId, id, updateDto);

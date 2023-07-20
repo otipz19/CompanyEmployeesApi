@@ -41,7 +41,7 @@ namespace Presentation.Controllers
         }
 
         [HttpPost]
-        [ServiceFilter(typeof(ValidationFilterAttribute))]
+        [ValidateArguments]
         public async Task<ActionResult> CreateCompany(CreateCompanyDto createDto)
         {
             GetCompanyDto result = await _services.CompanyService.CreateCompany(createDto);
@@ -49,7 +49,7 @@ namespace Presentation.Controllers
         }
 
         [HttpPost("collection")]
-        [ServiceFilter(typeof(ValidationFilterAttribute))]
+        [ValidateArguments]
         public async Task<ActionResult> CreateCompanies(IEnumerable<CreateCompanyDto> createDtos)
         {
             IEnumerable<GetCompanyDto> result = await _services.CompanyService.CreateCompaniesCollection(createDtos);
@@ -58,7 +58,7 @@ namespace Presentation.Controllers
         }
 
         [HttpPut("{id:guid}")]
-        [ServiceFilter(typeof(ValidationFilterAttribute))]
+        [ValidateArguments]
         public async Task<ActionResult> UpdateCompany(Guid id, UpdateCompanyDto updateDto)
         {
             await _services.CompanyService.UpdateCompany(id, updateDto);

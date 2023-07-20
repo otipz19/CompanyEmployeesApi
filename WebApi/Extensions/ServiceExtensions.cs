@@ -83,10 +83,5 @@ namespace WebApi.Extensions
                     .First();
             }
         }
-
-        public static IServiceCollection AddFilters(this IServiceCollection services)
-        {
-            return services.AddScoped<ValidationFilterAttribute>();
-        }
     }
 }
