@@ -60,10 +60,12 @@ namespace WebApi.Extentions
                 config.RespectBrowserAcceptHeader = true;
                 config.ReturnHttpNotAcceptable = true;
                 config.InputFormatters.Insert(0, GetJsonPatchInputFormatter());
-            }).AddXmlDataContractSerializerFormatters()
-            .AddMvcOptions(config =>
-            {
                 config.OutputFormatters.Add(new CsvOutputFormatter());
+            })
+            .AddXmlDataContractSerializerFormatters()
+            .ConfigureApiBehaviorOptions(options =>
+            {
+                options.SuppressModelStateInvalidFilter = true;
             });
 
             NewtonsoftJsonPatchInputFormatter GetJsonPatchInputFormatter()
