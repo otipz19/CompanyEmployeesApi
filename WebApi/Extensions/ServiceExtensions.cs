@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Formatters;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
+using Presentation.ActionFilters;
 using Repository;
 using Service;
 using Service.Contracts;
@@ -81,6 +82,11 @@ namespace WebApi.Extensions
                     .OfType<NewtonsoftJsonPatchInputFormatter>()
                     .First();
             }
+        }
+
+        public static IServiceCollection AddFilters(this IServiceCollection services)
+        {
+            return services.AddScoped<ValidationFilterAttribute>();
         }
     }
 }

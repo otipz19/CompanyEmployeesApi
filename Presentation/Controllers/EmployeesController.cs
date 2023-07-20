@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using Service.Contracts;
 using Shared.DTO.Employee;
 using Microsoft.AspNetCore.Mvc.NewtonsoftJson;
+using Presentation.ActionFilters;
 
 namespace Presentation.Controllers
 {
@@ -32,35 +33,17 @@ namespace Presentation.Controllers
         }
 
         [HttpPost]
-        public async Task<ActionResult> CreateEmployee(Guid companyId, CreateEmployeeDto? createDto)
+        [ServiceFilter(typeof(ValidationFilterAttribute))]
+        public async Task<ActionResult> CreateEmployee(Guid companyId, CreateEmployeeDto createDto)
         {
-            if (createDto is null)
-            {
-                return BadRequest();
-            }
-
-            if (!ModelState.IsValid)
-            {
-                return UnprocessableEntity(ModelState);
-            }
-
             GetEmployeeDto result = await _services.EmployeeService.CreateEmployeeOfCompany(createDto, companyId);
             return CreatedAtAction(nameof(GetEmployeeForCompany), new { companyId = companyId, id = result.Id }, result);
         }
 
         [HttpPut("{id:guid}")]
-        public async Task<ActionResult> UpdateEmployee(Guid companyId, Guid id, UpdateEmployeeDto? updateDto)
+        [ServiceFilter(typeof(ValidationFilterAttribute))]
+        public async Task<ActionResult> UpdateEmployee(Guid companyId, Guid id, UpdateEmployeeDto updateDto)
         {
-            if(updateDto is null)
-            {
-                return BadRequest();
-            }
-
-            if (!ModelState.IsValid)
-            {
-                return UnprocessableEntity(ModelState);
-            }
-
             await _services.EmployeeService.UpdateEmployeeOfCompany(companyId, id, updateDto);
             return NoContent();
         }
@@ -74,8 +57,13 @@ namespace Presentation.Controllers
 
         [HttpPatch("{id:guid}")]
         public async Task<ActionResult> PartiallyUpdateEmployee(Guid companyId, Guid id,
-            JsonPatchDocument<UpdateEmployeeDto> patchDoc)
+            JsonPatchDocument<UpdateEmployeeDto>? patchDoc)
         {
+            if(patchDoc is null)
+            {
+                return BadRequest();
+            }
+
             var toPatch = await _services.EmployeeService.GetEmployeeForPatch(companyId, id);
 
             patchDoc.ApplyTo(toPatch.dto, ModelState);

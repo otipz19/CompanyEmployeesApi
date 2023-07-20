@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
+using Presentation.ActionFilters;
 using Presentation.ModelBinders;
 using Service.Contracts;
 using Shared.DTO.Company;
@@ -40,53 +41,26 @@ namespace Presentation.Controllers
         }
 
         [HttpPost]
-        public async Task<ActionResult> CreateCompany(CreateCompanyDto? createDto)
+        [ServiceFilter(typeof(ValidationFilterAttribute))]
+        public async Task<ActionResult> CreateCompany(CreateCompanyDto createDto)
         {
-            if (createDto is null)
-            {
-                return BadRequest();
-            }
-
-            if (!ModelState.IsValid)
-            {
-                return UnprocessableEntity(ModelState);
-            }
-
             GetCompanyDto result = await _services.CompanyService.CreateCompany(createDto);
             return CreatedAtAction(nameof(GetCompany), new { id = result.Id }, result);
         }
 
         [HttpPost("collection")]
-        public async Task<ActionResult> CreateCompanies(IEnumerable<CreateCompanyDto>? createDtos)
+        [ServiceFilter(typeof(ValidationFilterAttribute))]
+        public async Task<ActionResult> CreateCompanies(IEnumerable<CreateCompanyDto> createDtos)
         {
-            if (createDtos is null)
-            {
-                return BadRequest();
-            }
-
-            if (!ModelState.IsValid)
-            {
-                return UnprocessableEntity(ModelState);
-            }
-
             IEnumerable<GetCompanyDto> result = await _services.CompanyService.CreateCompaniesCollection(createDtos);
             string ids = string.Join(',', result.Select(c => c.Id.ToString()));
             return CreatedAtAction(nameof(GetCompaniesByIds), new { ids = ids }, result);
         }
 
         [HttpPut("{id:guid}")]
+        [ServiceFilter(typeof(ValidationFilterAttribute))]
         public async Task<ActionResult> UpdateCompany(Guid id, UpdateCompanyDto updateDto)
         {
-            if(updateDto is null)
-            {
-                return BadRequest();
-            }
-
-            if (!ModelState.IsValid)
-            {
-                return UnprocessableEntity(ModelState);
-            }
-
             await _services.CompanyService.UpdateCompany(id, updateDto);
             return NoContent();
         }
@@ -101,6 +75,11 @@ namespace Presentation.Controllers
         [HttpPatch("{id:guid}")]
         public async Task<ActionResult> PartiallyUpdateCompany(Guid id, JsonPatchDocument<UpdateCompanyDto> patchDoc)
         {
+            if (patchDoc is null)
+            {
+                return BadRequest();
+            }
+
             var toPatch = await _services.CompanyService.GetCompanyForPatch(id);
 
             patchDoc.ApplyTo(toPatch.dto, ModelState);
