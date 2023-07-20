@@ -3,9 +3,9 @@ using Entities.ErrorModel;
 using Entities.Exceptions;
 using Microsoft.AspNetCore.Diagnostics;
 
-namespace WebApi.Extentions
+namespace WebApi.Extensions
 {
-    public static class ExceptionMiddlewareExtentions
+    public static class ExceptionMiddlewareExtensions
     {
         public static void ConfigureExceptionHandler(this WebApplication app, ILoggerManager logger)
         {

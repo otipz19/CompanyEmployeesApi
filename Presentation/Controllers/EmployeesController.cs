@@ -32,15 +32,35 @@ namespace Presentation.Controllers
         }
 
         [HttpPost]
-        public async Task<ActionResult> CreateEmployee(CreateEmployeeDto createDto, Guid companyId)
+        public async Task<ActionResult> CreateEmployee(Guid companyId, CreateEmployeeDto? createDto)
         {
+            if (createDto is null)
+            {
+                return BadRequest();
+            }
+
+            if (!ModelState.IsValid)
+            {
+                return UnprocessableEntity(ModelState);
+            }
+
             GetEmployeeDto result = await _services.EmployeeService.CreateEmployeeOfCompany(createDto, companyId);
             return CreatedAtAction(nameof(GetEmployeeForCompany), new { companyId = companyId, id = result.Id }, result);
         }
 
         [HttpPut("{id:guid}")]
-        public async Task<ActionResult> UpdateEmployee(Guid companyId, Guid id, UpdateEmployeeDto updateDto)
+        public async Task<ActionResult> UpdateEmployee(Guid companyId, Guid id, UpdateEmployeeDto? updateDto)
         {
+            if(updateDto is null)
+            {
+                return BadRequest();
+            }
+
+            if (!ModelState.IsValid)
+            {
+                return UnprocessableEntity(ModelState);
+            }
+
             await _services.EmployeeService.UpdateEmployeeOfCompany(companyId, id, updateDto);
             return NoContent();
         }
@@ -59,9 +79,10 @@ namespace Presentation.Controllers
             var toPatch = await _services.EmployeeService.GetEmployeeForPatch(companyId, id);
 
             patchDoc.ApplyTo(toPatch.dto, ModelState);
+            TryValidateModel(toPatch.dto);
             if (!ModelState.IsValid)
             {
-                return BadRequest(ModelState);
+                return UnprocessableEntity(ModelState);
             }
 
             await _services.EmployeeService.SaveChangesForPatch(toPatch.dto, toPatch.entity);

@@ -4,17 +4,15 @@ using LoggerService;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Formatters;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using Repository;
 using Service;
 using Service.Contracts;
-using System.Net.NetworkInformation;
 using WebApi.Formatters;
 
-namespace WebApi.Extentions
+namespace WebApi.Extensions
 {
-    public static class ServiceExtentions
+    public static class ServiceExtensions
     {
         public const string CorsPolicy = "CorsPolicy";
 

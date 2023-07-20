@@ -1,7 +1,7 @@
 using Contracts.LoggerService;
 using Microsoft.AspNetCore.HttpOverrides;
 using NLog;
-using WebApi.Extentions;
+using WebApi.Extensions;
 using WebApi.Formatters;
 
 namespace WebApi
@@ -51,7 +51,7 @@ namespace WebApi
                 ForwardedHeaders = ForwardedHeaders.All,
             });
 
-            app.UseCors(ServiceExtentions.CorsPolicy);
+            app.UseCors(ServiceExtensions.CorsPolicy);
 
             app.UseAuthorization();
 

@@ -1,11 +1,8 @@
-﻿namespace Shared.DTO.Employee
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace Shared.DTO.Employee
 {
-    public record UpdateEmployeeDto
+    public record UpdateEmployeeDto : BaseUpsertEmployeeDto
     {
-        public string? Name { get; init; }
-
-        public int Age { get; init; }
-
-        public string? Position { get; init; }
     }
 }

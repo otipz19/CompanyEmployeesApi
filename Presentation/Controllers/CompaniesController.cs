@@ -40,15 +40,35 @@ namespace Presentation.Controllers
         }
 
         [HttpPost]
-        public async Task<ActionResult> CreateCompany(CreateCompanyDto createDto)
+        public async Task<ActionResult> CreateCompany(CreateCompanyDto? createDto)
         {
+            if (createDto is null)
+            {
+                return BadRequest();
+            }
+
+            if (!ModelState.IsValid)
+            {
+                return UnprocessableEntity(ModelState);
+            }
+
             GetCompanyDto result = await _services.CompanyService.CreateCompany(createDto);
             return CreatedAtAction(nameof(GetCompany), new { id = result.Id }, result);
         }
 
         [HttpPost("collection")]
-        public async Task<ActionResult> CreateCompanies(IEnumerable<CreateCompanyDto> createDtos)
+        public async Task<ActionResult> CreateCompanies(IEnumerable<CreateCompanyDto>? createDtos)
         {
+            if (createDtos is null)
+            {
+                return BadRequest();
+            }
+
+            if (!ModelState.IsValid)
+            {
+                return UnprocessableEntity(ModelState);
+            }
+
             IEnumerable<GetCompanyDto> result = await _services.CompanyService.CreateCompaniesCollection(createDtos);
             string ids = string.Join(',', result.Select(c => c.Id.ToString()));
             return CreatedAtAction(nameof(GetCompaniesByIds), new { ids = ids }, result);
@@ -57,6 +77,16 @@ namespace Presentation.Controllers
         [HttpPut("{id:guid}")]
         public async Task<ActionResult> UpdateCompany(Guid id, UpdateCompanyDto updateDto)
         {
+            if(updateDto is null)
+            {
+                return BadRequest();
+            }
+
+            if (!ModelState.IsValid)
+            {
+                return UnprocessableEntity(ModelState);
+            }
+
             await _services.CompanyService.UpdateCompany(id, updateDto);
             return NoContent();
         }
@@ -76,7 +106,7 @@ namespace Presentation.Controllers
             patchDoc.ApplyTo(toPatch.dto, ModelState);
             if (!ModelState.IsValid)
             {
-                return BadRequest(ModelState);
+                return UnprocessableEntity(ModelState);
             }
 
             await _services.CompanyService.SaveChangesForPatch(toPatch.dto, toPatch.entity);
