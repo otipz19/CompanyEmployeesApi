@@ -31,7 +31,8 @@ namespace Repository
             IQueryable<Employee> employees = GetByCondition(e => e.CompanyId == companyId, asNoTracking)
                 .OrderBy(e => e.Name)
                 .FilterEmployees(requestParameters)
-                .SearchEmployees(requestParameters);
+                .SearchEmployees(requestParameters)
+                .OrderEmployees(requestParameters);
 
             var pagedResult = await PagedList<Employee>.CreateAsync(employees, requestParameters);
             return pagedResult;

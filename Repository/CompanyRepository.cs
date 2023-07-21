@@ -27,7 +27,8 @@ namespace Repository
         {
             IQueryable<Company> companies = GetAll(asNoTracking)
                 .OrderBy(c => c.Name)
-                .SearchCompanies(requestParameters);
+                .SearchCompanies(requestParameters)
+                .OrderCompanies(requestParameters);
 
             var pagedResult = await PagedList<Company>.CreateAsync(companies, requestParameters);
             return pagedResult;

@@ -1,5 +1,9 @@
 ﻿using Entities.Models;
+using Repository.Ordering;
 using Shared.DTO.RequestFeatures;
+using System.Linq.Dynamic.Core;
+using System.Reflection;
+using System.Text;
 
 namespace Repository.Extensions
 {
@@ -22,6 +26,24 @@ namespace Repository.Extensions
             string searchTerm = requestParameters.SearchTerm.ToLower().Trim();
 
             return query.Where(e => e.Name.ToLower().Contains(searchTerm) || e.Position.ToLower().Contains(searchTerm));
+        }
+
+        public static IQueryable<Employee> OrderEmployees(this IQueryable<Employee> query,
+            EmployeeRequestParameters requestParameters)
+        {
+            if (string.IsNullOrWhiteSpace(requestParameters.OrderBy))
+            {
+                return query.OrderBy(e => e.Name);
+            }
+
+            string? orderQuery = OrderQueryBuilder<Employee>.Build(requestParameters);
+
+            if(string.IsNullOrWhiteSpace(orderQuery))
+            {
+                return query.OrderBy(e => e.Name);
+            }
+
+            return query.OrderBy(orderQuery);
         }
     }
 }

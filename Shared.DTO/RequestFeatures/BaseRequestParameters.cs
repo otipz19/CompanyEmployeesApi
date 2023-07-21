@@ -13,5 +13,7 @@
         }
 
         public int CurrentPage { get; init; } = 1;
+
+        public string OrderBy { get; init; } = "name";
     }
 }
