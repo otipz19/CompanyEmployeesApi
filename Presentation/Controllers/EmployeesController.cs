@@ -23,10 +23,10 @@ namespace Presentation.Controllers
 
         [HttpGet]
         public async Task<ActionResult> GetEmployeesOfCompany(Guid companyId,
-            [FromQuery]EmployeeRequestParameters pagingParameters)
+            [FromQuery]EmployeeRequestParameters requestParameters)
         {
             PagedList<GetEmployeeDto> pagedResult = await _services.EmployeeService
-                .GetEmployeesOfCompany(companyId, pagingParameters);
+                .GetEmployeesOfCompany(companyId, requestParameters);
 
             Response.Headers.Add("X-Pagination", JsonSerializer.Serialize(pagedResult.MetaData));
 

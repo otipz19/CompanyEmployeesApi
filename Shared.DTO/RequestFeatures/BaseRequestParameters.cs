@@ -12,6 +12,6 @@
             set => _pageSize = value > MaxPageSize ? MaxPageSize : value;
         }
 
-        public int CurrentPage { get; set; } = 1;
+        public int CurrentPage { get; init; } = 1;
     }
 }

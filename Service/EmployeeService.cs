@@ -49,9 +49,9 @@ namespace Service
         }
 
         public async Task<PagedList<GetEmployeeDto>> GetEmployeesOfCompany(Guid companyId,
-            EmployeeRequestParameters pagingParameters)
+            EmployeeRequestParameters requestParameters)
         {
-            if (!pagingParameters.IsValidAgeRange)
+            if (!requestParameters.IsValidAgeRange)
             {
                 throw new AgeRangeBadRequestException();
             }
@@ -59,7 +59,7 @@ namespace Service
             await GetCompanyIfExistsAsNoTracking(companyId);
 
             PagedList<Employee> pagedEmployees = await _repositories.Employees
-                .GetEmployeesOfCompany(companyId, pagingParameters, asNoTracking: true);
+                .GetEmployeesOfCompany(companyId, requestParameters, asNoTracking: true);
 
             IEnumerable<GetEmployeeDto> employeeDtos = _mapper.Map<IEnumerable<GetEmployeeDto>>(pagedEmployees.Items);
             PagedList<GetEmployeeDto> pagedDtos = new(employeeDtos, pagedEmployees.MetaData);

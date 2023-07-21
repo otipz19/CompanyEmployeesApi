@@ -59,10 +59,10 @@ namespace Service
             await _repositories.SaveChangesAsync();
         }
 
-        public async Task<PagedList<GetCompanyDto>> GetCompanies(CompanyRequestParameters pagingParameters) 
+        public async Task<PagedList<GetCompanyDto>> GetCompanies(CompanyRequestParameters requestParameters) 
         {
             PagedList<Company> pagedCompanies = await _repositories.Companies
-                .GetCompanies(asNoTracking: true, pagingParameters);
+                .GetCompanies(asNoTracking: true, requestParameters);
 
             IEnumerable<GetCompanyDto> companiesDtos = _mapper.Map<IEnumerable<GetCompanyDto>>(pagedCompanies.Items);
             var pagedDtos = new PagedList<GetCompanyDto>(companiesDtos, pagedCompanies.MetaData);
@@ -71,13 +71,13 @@ namespace Service
         }
 
         public async Task<PagedList<GetCompanyDto>> GetCompaniesByIds(IEnumerable<Guid>? ids,
-            CompanyRequestParameters pagingParameters)
+            CompanyRequestParameters requestParameters)
         {
             if (ids is null)
                 throw new IdParametersBadRequestException();
 
             PagedList<Company> pagedCompanies = await _repositories.Companies
-                .GetCompaniesByIds(ids, asNoTracking: true, pagingParameters);
+                .GetCompaniesByIds(ids, asNoTracking: true, requestParameters);
 
             if (pagedCompanies.MetaData.TotalCount != ids.Count())
                 throw new CollectionByIdsBadRequestException();

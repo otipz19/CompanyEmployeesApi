@@ -6,10 +6,10 @@ namespace Contracts.Repository
 {
     public interface ICompanyRepository
     {
-        public Task<PagedList<Company>> GetCompanies(bool asNoTracking, CompanyRequestParameters pagingParameters);
+        public Task<PagedList<Company>> GetCompanies(bool asNoTracking, CompanyRequestParameters requestParameters);
 
         public Task<PagedList<Company>> GetCompaniesByIds(IEnumerable<Guid> ids, bool asNoTracking,
-            CompanyRequestParameters pagingParameters);
+            CompanyRequestParameters requestParameters);
 
         public Task<Company?> GetCompany(Guid id, bool asNoTracking);
 

@@ -22,9 +22,9 @@ namespace Presentation.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult> GetCompanies([FromQuery]CompanyRequestParameters pagingParameters)
+        public async Task<ActionResult> GetCompanies([FromQuery]CompanyRequestParameters requestParameters)
         {
-            PagedList<GetCompanyDto> companies = await _services.CompanyService.GetCompanies(pagingParameters);
+            PagedList<GetCompanyDto> companies = await _services.CompanyService.GetCompanies(requestParameters);
 
             Response.Headers.Add("X-Pagination", JsonSerializer.Serialize(companies.MetaData));
 
@@ -32,10 +32,10 @@ namespace Presentation.Controllers
         }
 
         [HttpGet("collection/({ids})")]
-        public async Task<ActionResult> GetCompaniesByIds([FromQuery]CompanyRequestParameters pagingParameters,
+        public async Task<ActionResult> GetCompaniesByIds([FromQuery]CompanyRequestParameters requestParameters,
             [FromBody][ModelBinder(BinderType = typeof(ArrayModelBinder))]IEnumerable<Guid> ids)
         {
-            PagedList<GetCompanyDto> companies = await _services.CompanyService.GetCompaniesByIds(ids, pagingParameters);
+            PagedList<GetCompanyDto> companies = await _services.CompanyService.GetCompaniesByIds(ids, requestParameters);
 
             Response.Headers.Add("X-Pagination", JsonSerializer.Serialize(companies.MetaData));
 

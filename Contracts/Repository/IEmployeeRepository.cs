@@ -7,7 +7,7 @@ namespace Contracts.Repository
     public interface IEmployeeRepository
     {
         public Task<PagedList<Employee>> GetEmployeesOfCompany(Guid companyId,
-            EmployeeRequestParameters pagingParameters,
+            EmployeeRequestParameters requestParameters,
             bool asNoTracking);
 
         public Task<Employee?> GetEmployeeOfCompany(Guid companyId, Guid employeeId, bool asNoTracking);

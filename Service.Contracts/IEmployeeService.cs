@@ -8,7 +8,7 @@ namespace Service.Contracts
     public interface IEmployeeService
     {
         public Task<PagedList<GetEmployeeDto>> GetEmployeesOfCompany(Guid companyId,
-            EmployeeRequestParameters pagingParameters);
+            EmployeeRequestParameters requestParameters);
 
         public Task<GetEmployeeDto> GetEmployeeOfCompany(Guid companyId, Guid employeeId);
 

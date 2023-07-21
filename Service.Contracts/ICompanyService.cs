@@ -7,10 +7,10 @@ namespace Service.Contracts
 {
     public interface ICompanyService
     {
-        public Task<PagedList<GetCompanyDto>> GetCompanies(CompanyRequestParameters pagingParameters);
+        public Task<PagedList<GetCompanyDto>> GetCompanies(CompanyRequestParameters requestParameters);
 
         public Task<PagedList<GetCompanyDto>> GetCompaniesByIds(IEnumerable<Guid> ids,
-            CompanyRequestParameters pagingParameters);
+            CompanyRequestParameters requestParameters);
 
         public Task<GetCompanyDto> GetCompany(Guid id);
 
