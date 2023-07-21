@@ -4,6 +4,7 @@ using Presentation.ActionFilters;
 using Presentation.ModelBinders;
 using Service.Contracts;
 using Shared.DTO.Company;
+using Shared.DTO.RequestFeatures;
 using Shared.DTO.RequestFeatures.Paging;
 using System.Text.Json;
 
@@ -21,7 +22,7 @@ namespace Presentation.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult> GetCompanies([FromQuery]CompanyPagingParameters pagingParameters)
+        public async Task<ActionResult> GetCompanies([FromQuery]CompanyRequestParameters pagingParameters)
         {
             PagedList<GetCompanyDto> companies = await _services.CompanyService.GetCompanies(pagingParameters);
 
@@ -31,7 +32,7 @@ namespace Presentation.Controllers
         }
 
         [HttpGet("collection/({ids})")]
-        public async Task<ActionResult> GetCompaniesByIds([FromQuery]CompanyPagingParameters pagingParameters,
+        public async Task<ActionResult> GetCompaniesByIds([FromQuery]CompanyRequestParameters pagingParameters,
             [FromBody][ModelBinder(BinderType = typeof(ArrayModelBinder))]IEnumerable<Guid> ids)
         {
             PagedList<GetCompanyDto> companies = await _services.CompanyService.GetCompaniesByIds(ids, pagingParameters);

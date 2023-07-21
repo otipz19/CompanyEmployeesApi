@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Mvc.NewtonsoftJson;
 using Presentation.ActionFilters;
 using Shared.DTO.RequestFeatures.Paging;
 using System.Text.Json;
+using Shared.DTO.RequestFeatures;
 
 namespace Presentation.Controllers
 {
@@ -22,7 +23,7 @@ namespace Presentation.Controllers
 
         [HttpGet]
         public async Task<ActionResult> GetEmployeesOfCompany(Guid companyId,
-            [FromQuery]EmployeePagingParameters pagingParameters)
+            [FromQuery]EmployeeRequestParameters pagingParameters)
         {
             PagedList<GetEmployeeDto> pagedResult = await _services.EmployeeService
                 .GetEmployeesOfCompany(companyId, pagingParameters);

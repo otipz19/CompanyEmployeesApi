@@ -1,5 +1,6 @@
 ﻿using Entities.Models;
 using Shared.DTO.Employee;
+using Shared.DTO.RequestFeatures;
 using Shared.DTO.RequestFeatures.Paging;
 
 namespace Service.Contracts
@@ -7,7 +8,7 @@ namespace Service.Contracts
     public interface IEmployeeService
     {
         public Task<PagedList<GetEmployeeDto>> GetEmployeesOfCompany(Guid companyId,
-            EmployeePagingParameters pagingParameters);
+            EmployeeRequestParameters pagingParameters);
 
         public Task<GetEmployeeDto> GetEmployeeOfCompany(Guid companyId, Guid employeeId);
 

@@ -30,7 +30,7 @@ namespace Shared.DTO.RequestFeatures.Paging
         public IEnumerable<T> Items => _items;
 
         public static async Task<PagedList<T>> CreateAsync(IQueryable<T> query,
-            BasePagingRequestParameters pagingParameters)
+            BaseRequestParameters pagingParameters)
         {
             int totalCount = await query.CountAsync();
             List<T> items = await query

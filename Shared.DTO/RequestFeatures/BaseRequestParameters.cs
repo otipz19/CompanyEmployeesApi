@@ -1,6 +1,6 @@
-﻿namespace Shared.DTO.RequestFeatures.Paging
+﻿namespace Shared.DTO.RequestFeatures
 {
-    public abstract class BasePagingRequestParameters
+    public abstract class BaseRequestParameters
     {
         public const int MaxPageSize = 50;
 

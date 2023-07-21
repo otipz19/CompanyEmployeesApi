@@ -1,6 +1,7 @@
 ﻿using Contracts.Repository;
 using Entities.Models;
 using Microsoft.EntityFrameworkCore;
+using Shared.DTO.RequestFeatures;
 using Shared.DTO.RequestFeatures.Paging;
 
 namespace Repository
@@ -21,7 +22,7 @@ namespace Repository
             Delete(company);
         }
 
-        public async Task<PagedList<Company>> GetCompanies(bool asNoTracking, CompanyPagingParameters pagingParameters)
+        public async Task<PagedList<Company>> GetCompanies(bool asNoTracking, CompanyRequestParameters pagingParameters)
         {
             IQueryable<Company> companies = GetAll(asNoTracking).OrderBy(c => c.Name);
             var pagedResult = await PagedList<Company>.CreateAsync(companies, pagingParameters);
@@ -29,7 +30,7 @@ namespace Repository
         }
 
         public async Task<PagedList<Company>> GetCompaniesByIds(IEnumerable<Guid> ids, bool asNoTracking,
-            CompanyPagingParameters pagingParameters)
+            CompanyRequestParameters pagingParameters)
         {
             IQueryable<Company> companies = GetByCondition(c => ids.Contains(c.Id), asNoTracking).OrderBy(c => c.Name);
             var pagedResult = await PagedList<Company>.CreateAsync(companies, pagingParameters);

@@ -1,6 +1,7 @@
 ﻿using Contracts.Repository;
 using Entities.Models;
 using Microsoft.EntityFrameworkCore;
+using Shared.DTO.RequestFeatures;
 using Shared.DTO.RequestFeatures.Paging;
 
 namespace Repository
@@ -23,11 +24,14 @@ namespace Repository
         }
 
         public async Task<PagedList<Employee>> GetEmployeesOfCompany(Guid companyId,
-            EmployeePagingParameters pagingParameters,
+            EmployeeRequestParameters pagingParameters,
             bool asNoTracking)
         {
             IQueryable<Employee> employees = GetByCondition(e => e.CompanyId == companyId, asNoTracking)
                 .OrderBy(e => e.Name);
+
+            employees = employees.Where(e => e.Age >= pagingParameters.MinAge && e.Age <= pagingParameters.MaxAge);
+
             var pagedResult = await PagedList<Employee>.CreateAsync(employees, pagingParameters);
             return pagedResult;
         }

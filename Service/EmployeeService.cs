@@ -5,6 +5,7 @@ using Entities.Exceptions;
 using Entities.Models;
 using Service.Contracts;
 using Shared.DTO.Employee;
+using Shared.DTO.RequestFeatures;
 using Shared.DTO.RequestFeatures.Paging;
 
 namespace Service
@@ -48,8 +49,13 @@ namespace Service
         }
 
         public async Task<PagedList<GetEmployeeDto>> GetEmployeesOfCompany(Guid companyId,
-            EmployeePagingParameters pagingParameters)
+            EmployeeRequestParameters pagingParameters)
         {
+            if (!pagingParameters.IsValidAgeRange)
+            {
+                throw new AgeRangeBadRequestException();
+            }
+
             await GetCompanyIfExistsAsNoTracking(companyId);
 
             PagedList<Employee> pagedEmployees = await _repositories.Employees

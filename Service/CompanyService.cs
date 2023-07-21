@@ -5,6 +5,7 @@ using Entities.Exceptions;
 using Entities.Models;
 using Service.Contracts;
 using Shared.DTO.Company;
+using Shared.DTO.RequestFeatures;
 using Shared.DTO.RequestFeatures.Paging;
 using System.Formats.Asn1;
 
@@ -58,7 +59,7 @@ namespace Service
             await _repositories.SaveChangesAsync();
         }
 
-        public async Task<PagedList<GetCompanyDto>> GetCompanies(CompanyPagingParameters pagingParameters) 
+        public async Task<PagedList<GetCompanyDto>> GetCompanies(CompanyRequestParameters pagingParameters) 
         {
             PagedList<Company> pagedCompanies = await _repositories.Companies
                 .GetCompanies(asNoTracking: true, pagingParameters);
@@ -70,7 +71,7 @@ namespace Service
         }
 
         public async Task<PagedList<GetCompanyDto>> GetCompaniesByIds(IEnumerable<Guid>? ids,
-            CompanyPagingParameters pagingParameters)
+            CompanyRequestParameters pagingParameters)
         {
             if (ids is null)
                 throw new IdParametersBadRequestException();
