@@ -4,7 +4,7 @@ using System.Reflection;
 
 namespace Service.DataShaping
 {
-    public class DataShaper
+    public class DataShaper : IDataShaper
     {
         private static readonly Dictionary<Type, PropertyInfo[]> _propertiesOfRegisteredTypes = new();
 
@@ -18,13 +18,13 @@ namespace Service.DataShaping
             _propertiesOfRegisteredTypes.Add(type, type.GetProperties());
         }
 
-        public IEnumerable<ExpandoObject> ShapeData<T>(IEnumerable<T> items, string fieldsString)
+        public IEnumerable<ExpandoObject> ShapeData<T>(IEnumerable<T> items, string? fieldsString)
         {
             var properties = GetRequiredProperties(fieldsString, typeof(T));
             return FetchData(items, properties);
         }
 
-        public ExpandoObject ShapeData<T>(T item, string fieldsString)
+        public ExpandoObject ShapeData<T>(T item, string? fieldsString)
         {
             var properties = GetRequiredProperties(fieldsString, typeof(T));
             return FetchData(item, properties);
@@ -35,7 +35,7 @@ namespace Service.DataShaping
         /// Collection of properties of T type, that match to fields specified in query.
         /// If query string is incorrect, returns collection of all properties of T type.
         /// </returns>
-        private IEnumerable<PropertyInfo> GetRequiredProperties(string fieldsString, Type type)
+        private IEnumerable<PropertyInfo> GetRequiredProperties(string? fieldsString, Type type)
         {
             PropertyInfo[] allProperties = _propertiesOfRegisteredTypes[type];
 

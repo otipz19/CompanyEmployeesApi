@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using Contracts.DataShaping;
 using Contracts.Repository;
 using Entities.Exceptions;
 using Entities.Models;
@@ -9,11 +10,15 @@ namespace Service
     {
         protected readonly IRepositoryManager _repositories;
         protected readonly IMapper _mapper;
+        protected readonly IDataShaper _dataShaper;
 
-        protected BaseService(IRepositoryManager repositories, IMapper mapper)
+        protected BaseService(IRepositoryManager repositories,
+            IMapper mapper,
+            IDataShaper dataShaper)
         {
             _repositories = repositories;
             _mapper = mapper;
+            _dataShaper = dataShaper;
         }
 
         protected async Task<Company> GetCompanyIfExistsAsNoTracking(Guid companyId)

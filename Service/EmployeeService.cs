@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using Contracts.DataShaping;
 using Contracts.LoggerService;
 using Contracts.Repository;
 using Entities.Exceptions;
@@ -7,13 +8,16 @@ using Service.Contracts;
 using Shared.DTO.Employee;
 using Shared.DTO.RequestFeatures;
 using Shared.DTO.RequestFeatures.Paging;
+using System.Dynamic;
 
 namespace Service
 {
     public class EmployeeService : BaseService, IEmployeeService
     {
-        public EmployeeService(IRepositoryManager repositoryManager, IMapper mapper)
-            : base(repositoryManager, mapper) { }
+        public EmployeeService(IRepositoryManager repositoryManager, IMapper mapper, IDataShaper dataShaper)
+            : base(repositoryManager, mapper, dataShaper)
+        {
+        }
 
         public async Task<GetEmployeeDto> CreateEmployeeOfCompany(CreateEmployeeDto dto, Guid companyId)
         {
@@ -48,7 +52,7 @@ namespace Service
             await _repositories.SaveChangesAsync();
         }
 
-        public async Task<PagedList<GetEmployeeDto>> GetEmployeesOfCompany(Guid companyId,
+        public async Task<(IEnumerable<ExpandoObject> items, PagingMetaData metaData)> GetEmployeesOfCompany(Guid companyId,
             EmployeeRequestParameters requestParameters)
         {
             if (!requestParameters.IsValidAgeRange)
@@ -62,8 +66,10 @@ namespace Service
                 .GetEmployeesOfCompany(companyId, requestParameters, asNoTracking: true);
 
             IEnumerable<GetEmployeeDto> employeeDtos = _mapper.Map<IEnumerable<GetEmployeeDto>>(pagedEmployees.Items);
-            PagedList<GetEmployeeDto> pagedDtos = new(employeeDtos, pagedEmployees.MetaData);
-            return pagedDtos;
+
+            IEnumerable<ExpandoObject> shapedDtos = _dataShaper.ShapeData(employeeDtos, requestParameters.Fields);
+
+            return (shapedDtos, pagedEmployees.MetaData);
         }
 
         public async Task<GetEmployeeDto> GetEmployeeOfCompany(Guid companyId, Guid employeeId)
@@ -82,7 +88,7 @@ namespace Service
 
             Employee entity = await GetEmployeeIfExists(companyId, employeeId);
 
-            UpdateEmployeeDto dto  = _mapper.Map<UpdateEmployeeDto>(entity);
+            UpdateEmployeeDto dto = _mapper.Map<UpdateEmployeeDto>(entity);
 
             return (dto, entity);
         }

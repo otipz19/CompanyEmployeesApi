@@ -2,9 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Service.Contracts;
 using Shared.DTO.Employee;
-using Microsoft.AspNetCore.Mvc.NewtonsoftJson;
 using Presentation.ActionFilters;
-using Shared.DTO.RequestFeatures.Paging;
 using System.Text.Json;
 using Shared.DTO.RequestFeatures;
 
@@ -25,12 +23,12 @@ namespace Presentation.Controllers
         public async Task<ActionResult> GetEmployeesOfCompany(Guid companyId,
             [FromQuery]EmployeeRequestParameters requestParameters)
         {
-            PagedList<GetEmployeeDto> pagedResult = await _services.EmployeeService
+            var employees = await _services.EmployeeService
                 .GetEmployeesOfCompany(companyId, requestParameters);
 
-            Response.Headers.Add("X-Pagination", JsonSerializer.Serialize(pagedResult.MetaData));
+            Response.Headers.Add("X-Pagination", JsonSerializer.Serialize(employees.metaData));
 
-            return Ok(pagedResult.Items);
+            return Ok(employees.items);
         }
 
         [HttpGet("{id:guid}")]

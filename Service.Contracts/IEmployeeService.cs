@@ -2,12 +2,13 @@
 using Shared.DTO.Employee;
 using Shared.DTO.RequestFeatures;
 using Shared.DTO.RequestFeatures.Paging;
+using System.Dynamic;
 
 namespace Service.Contracts
 {
     public interface IEmployeeService
     {
-        public Task<PagedList<GetEmployeeDto>> GetEmployeesOfCompany(Guid companyId,
+        public Task<(IEnumerable<ExpandoObject> items, PagingMetaData metaData)> GetEmployeesOfCompany(Guid companyId,
             EmployeeRequestParameters requestParameters);
 
         public Task<GetEmployeeDto> GetEmployeeOfCompany(Guid companyId, Guid employeeId);

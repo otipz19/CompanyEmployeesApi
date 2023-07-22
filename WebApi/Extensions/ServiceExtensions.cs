@@ -1,4 +1,5 @@
-﻿using Contracts.LoggerService;
+﻿using Contracts.DataShaping;
+using Contracts.LoggerService;
 using Contracts.Repository;
 using LoggerService;
 using Microsoft.AspNetCore.Mvc;
@@ -9,6 +10,9 @@ using Presentation.ActionFilters;
 using Repository;
 using Service;
 using Service.Contracts;
+using Service.DataShaping;
+using Shared.DTO.Company;
+using Shared.DTO.Employee;
 using WebApi.Formatters;
 
 namespace WebApi.Extensions
@@ -83,6 +87,14 @@ namespace WebApi.Extensions
                     .OfType<NewtonsoftJsonPatchInputFormatter>()
                     .First();
             }
+        }
+
+        public static IServiceCollection AddDataShaper(this IServiceCollection services)
+        {
+            services.AddScoped<IDataShaper, DataShaper>();
+            DataShaper.AddType<GetEmployeeDto>();
+            DataShaper.AddType<GetCompanyDto>();
+            return services;
         }
     }
 }

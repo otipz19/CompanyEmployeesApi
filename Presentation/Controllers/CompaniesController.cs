@@ -5,7 +5,6 @@ using Presentation.ModelBinders;
 using Service.Contracts;
 using Shared.DTO.Company;
 using Shared.DTO.RequestFeatures;
-using Shared.DTO.RequestFeatures.Paging;
 using System.Text.Json;
 
 namespace Presentation.Controllers
@@ -24,22 +23,22 @@ namespace Presentation.Controllers
         [HttpGet]
         public async Task<ActionResult> GetCompanies([FromQuery]CompanyRequestParameters requestParameters)
         {
-            PagedList<GetCompanyDto> companies = await _services.CompanyService.GetCompanies(requestParameters);
+            var companies = await _services.CompanyService.GetCompanies(requestParameters);
 
-            Response.Headers.Add("X-Pagination", JsonSerializer.Serialize(companies.MetaData));
+            Response.Headers.Add("X-Pagination", JsonSerializer.Serialize(companies.metaData));
 
-            return Ok(companies.Items);
+            return Ok(companies.items);
         }
 
         [HttpGet("collection/({ids})")]
         public async Task<ActionResult> GetCompaniesByIds([FromQuery]CompanyRequestParameters requestParameters,
             [FromBody][ModelBinder(BinderType = typeof(ArrayModelBinder))]IEnumerable<Guid> ids)
         {
-            PagedList<GetCompanyDto> companies = await _services.CompanyService.GetCompaniesByIds(ids, requestParameters);
+            var companies = await _services.CompanyService.GetCompaniesByIds(ids, requestParameters);
 
-            Response.Headers.Add("X-Pagination", JsonSerializer.Serialize(companies.MetaData));
+            Response.Headers.Add("X-Pagination", JsonSerializer.Serialize(companies.metaData));
 
-            return Ok(companies.Items);
+            return Ok(companies.items);
         }
 
         [HttpGet("{id:guid}")]

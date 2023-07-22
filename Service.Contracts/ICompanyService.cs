@@ -2,14 +2,16 @@
 using Shared.DTO.Company;
 using Shared.DTO.RequestFeatures;
 using Shared.DTO.RequestFeatures.Paging;
+using System.Dynamic;
 
 namespace Service.Contracts
 {
     public interface ICompanyService
     {
-        public Task<PagedList<GetCompanyDto>> GetCompanies(CompanyRequestParameters requestParameters);
+        public Task<(IEnumerable<ExpandoObject> items, PagingMetaData metaData)> GetCompanies(
+            CompanyRequestParameters requestParameters);
 
-        public Task<PagedList<GetCompanyDto>> GetCompaniesByIds(IEnumerable<Guid> ids,
+        public Task<(IEnumerable<ExpandoObject> items, PagingMetaData metaData)> GetCompaniesByIds(IEnumerable<Guid> ids,
             CompanyRequestParameters requestParameters);
 
         public Task<GetCompanyDto> GetCompany(Guid id);

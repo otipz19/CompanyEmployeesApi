@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using Contracts.DataShaping;
 using Contracts.LoggerService;
 using Contracts.Repository;
 using Entities.Exceptions;
@@ -7,14 +8,17 @@ using Service.Contracts;
 using Shared.DTO.Company;
 using Shared.DTO.RequestFeatures;
 using Shared.DTO.RequestFeatures.Paging;
+using System.Dynamic;
 using System.Formats.Asn1;
 
 namespace Service
 {
     public class CompanyService : BaseService, ICompanyService
     {
-        public CompanyService(IRepositoryManager repositoryManager, IMapper mapper)
-            : base(repositoryManager, mapper) { }
+        public CompanyService(IRepositoryManager repositoryManager, IMapper mapper, IDataShaper dataShaper)
+            : base(repositoryManager, mapper, dataShaper)
+        {
+        }
 
         public async Task<GetCompanyDto> CreateCompany(CreateCompanyDto dto)
         {
@@ -33,7 +37,7 @@ namespace Service
 
             IEnumerable<Company> companies = _mapper.Map<IEnumerable<Company>>(dtos);
 
-            foreach(var company in companies)
+            foreach (var company in companies)
             {
                 _repositories.Companies.CreateCompany(company);
             }
@@ -59,18 +63,20 @@ namespace Service
             await _repositories.SaveChangesAsync();
         }
 
-        public async Task<PagedList<GetCompanyDto>> GetCompanies(CompanyRequestParameters requestParameters) 
+        public async Task<(IEnumerable<ExpandoObject> items, PagingMetaData metaData)> GetCompanies(
+            CompanyRequestParameters requestParameters)
         {
             PagedList<Company> pagedCompanies = await _repositories.Companies
                 .GetCompanies(asNoTracking: true, requestParameters);
 
             IEnumerable<GetCompanyDto> companiesDtos = _mapper.Map<IEnumerable<GetCompanyDto>>(pagedCompanies.Items);
-            var pagedDtos = new PagedList<GetCompanyDto>(companiesDtos, pagedCompanies.MetaData);
 
-            return pagedDtos;
+            IEnumerable<ExpandoObject> shapedDtos = _dataShaper.ShapeData(companiesDtos, requestParameters.Fields);
+
+            return (shapedDtos, pagedCompanies.MetaData);
         }
 
-        public async Task<PagedList<GetCompanyDto>> GetCompaniesByIds(IEnumerable<Guid>? ids,
+        public async Task<(IEnumerable<ExpandoObject> items, PagingMetaData metaData)> GetCompaniesByIds(IEnumerable<Guid>? ids,
             CompanyRequestParameters requestParameters)
         {
             if (ids is null)
@@ -83,9 +89,10 @@ namespace Service
                 throw new CollectionByIdsBadRequestException();
 
             IEnumerable<GetCompanyDto> companiesDtos = _mapper.Map<IEnumerable<GetCompanyDto>>(pagedCompanies.Items);
-            var pagedDtos = new PagedList<GetCompanyDto>(companiesDtos, pagedCompanies.MetaData);
 
-            return pagedDtos;
+            IEnumerable<ExpandoObject> shapedDtos = _dataShaper.ShapeData(companiesDtos, requestParameters.Fields);
+
+            return (shapedDtos, pagedCompanies.MetaData);
         }
 
         public async Task<GetCompanyDto> GetCompany(Guid id)
@@ -100,7 +107,7 @@ namespace Service
         {
             Company company = await GetCompanyIfExists(id);
             UpdateCompanyDto dto = _mapper.Map<UpdateCompanyDto>(company);
-            return (dto , company);
+            return (dto, company);
         }
 
         public async Task SaveChangesForPatch(UpdateCompanyDto dto, Company entity)
