@@ -37,6 +37,11 @@ namespace Service.DataShaping
         /// </returns>
         private IEnumerable<PropertyInfo> GetRequiredProperties(string? fieldsString, Type type)
         {
+            if (!_propertiesOfRegisteredTypes.ContainsKey(type))
+            {
+                AddType(type);
+            }
+
             PropertyInfo[] allProperties = _propertiesOfRegisteredTypes[type];
 
             if (string.IsNullOrWhiteSpace(fieldsString))
