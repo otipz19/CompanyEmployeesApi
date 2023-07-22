@@ -7,6 +7,7 @@ using Presentation.ActionFilters;
 using Shared.DTO.RequestFeatures.Paging;
 using System.Text.Json;
 using Shared.DTO.RequestFeatures;
+using Presentation.DataShaping;
 
 namespace Presentation.Controllers
 {
@@ -30,7 +31,9 @@ namespace Presentation.Controllers
 
             Response.Headers.Add("X-Pagination", JsonSerializer.Serialize(pagedResult.MetaData));
 
-            return Ok(pagedResult.Items);
+            var shapedResult = DataShaper<GetEmployeeDto>.Shape(pagedResult.Items, requestParameters);
+
+            return Ok(shapedResult);
         }
 
         [HttpGet("{id:guid}")]
