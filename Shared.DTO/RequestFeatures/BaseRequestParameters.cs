@@ -15,5 +15,7 @@
         public int CurrentPage { get; init; } = 1;
 
         public string OrderBy { get; init; } = "name";
+
+        public string? Fields { get; set; }
     }
 }
