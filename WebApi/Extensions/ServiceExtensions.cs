@@ -13,6 +13,7 @@ using Service.DataShaping;
 using Shared.DTO.Company;
 using Shared.DTO.Employee;
 using WebApi.Formatters;
+using Presentation.ActionFilters;
 
 namespace WebApi.Extensions
 {
@@ -94,6 +95,31 @@ namespace WebApi.Extensions
             DataShaper.AddType<GetEmployeeDto>();
             DataShaper.AddType<GetCompanyDto>();
             return services;
+        }
+
+        public static IServiceCollection AddMediaTypes(this IServiceCollection services)
+        {
+            return services.Configure<MvcOptions>(config =>
+            {
+                const string mediaType = "application/vnd.codemaze.hateoas+";
+
+                var jsonFormatter = config.OutputFormatters.OfType<SystemTextJsonOutputFormatter>().FirstOrDefault();
+                if(jsonFormatter is not null)
+                {
+                    jsonFormatter.SupportedMediaTypes.Add(mediaType + "json");
+                }
+
+                var xmlFormatter = config.OutputFormatters.OfType<XmlDataContractSerializerOutputFormatter>().FirstOrDefault();
+                if(xmlFormatter is not null)
+                {
+                    xmlFormatter.SupportedMediaTypes.Add(mediaType + "xml");
+                }
+            });
+        }
+
+        public static IServiceCollection AddFilters(this IServiceCollection services)
+        {
+            return services.AddScoped<ValidateMediaTypeActionFilter>();
         }
     }
 }

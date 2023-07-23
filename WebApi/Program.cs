@@ -31,6 +31,8 @@ namespace WebApi
 
             builder.Services.AddAutoMapper(typeof(Program).Assembly);
 
+            builder.Services.AddMediaTypes();
+
             var app = builder.Build();
 
             // Configure the HTTP request pipeline.
