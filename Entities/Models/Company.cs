@@ -10,14 +10,14 @@ namespace Entities.Models
 
         [Required]
         [MaxLength(60)]
-        public string Name { get; set; }
+        public string Name { get; set; } = string.Empty;
 
         [Required]
         [MaxLength(60)]
-        public string Address { get; set; }
+        public string Address { get; set; } = string.Empty;
 
-        public string Country { get; set; }
+        public string? Country { get; set; }
 
-        public ICollection<Employee> Employees { get; set; }
+        public ICollection<Employee>? Employees { get; set; }
     }
 }

@@ -1,13 +1,14 @@
-﻿using Service.Contracts.DataShaping;
+﻿using Entities.LinkModels;
 using System.Collections;
 using System.Diagnostics.CodeAnalysis;
 using System.Dynamic;
 using System.Xml;
 using System.Xml.Schema;
+using System.Xml.Serialization;
 
-namespace Shared.DTO.Expando
+namespace Entities.DataShaping
 {
-    public class ShapedObject : DynamicObject, IShapedObject
+    public class ShapedObject : DynamicObject, IDictionary<string, object?>, IXmlSerializable
     {
         private const string RootElement = nameof(ShapedObject);
 
@@ -69,10 +70,36 @@ namespace Shared.DTO.Expando
             foreach(string key in Keys)
             {
                 object? value = this[key];
-                writer.WriteStartElement(key);
-                writer.WriteString(value?.ToString() ?? "");
-                writer.WriteEndElement();
+                WriteElementToXml(key, value, writer);
             }
+        }
+
+        private void WriteElementToXml(string key, object? value, XmlWriter writer)
+        {
+            writer.WriteStartElement(key);
+
+            if(value is not null)
+            {
+                if (value is List<Link> linkList)
+                {
+                    foreach(Link link in linkList)
+                    {
+                        writer.WriteStartElement(nameof(Link));
+
+                        WriteElementToXml(nameof(link.Href), link.Href, writer);
+                        WriteElementToXml(nameof(link.Rel), link.Rel, writer);
+                        WriteElementToXml(nameof(link.Method), link.Method, writer);
+
+                        writer.WriteEndElement();
+                    }
+                }
+                else
+                {
+                    writer.WriteString(value.ToString());
+                }
+            }
+
+            writer.WriteEndElement();
         }
 
         #endregion

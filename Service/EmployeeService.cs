@@ -1,14 +1,13 @@
 ﻿using AutoMapper;
 using Service.Contracts.DataShaping;
+using Entities.DataShaping;
 using Contracts.Repository;
 using Entities.Exceptions;
 using Entities.Models;
 using Service.Contracts;
 using Shared.DTO.Employee;
-using Shared.DTO.Expando;
 using Shared.DTO.RequestFeatures;
 using Shared.DTO.RequestFeatures.Paging;
-using System.Dynamic;
 
 namespace Service
 {
@@ -52,7 +51,7 @@ namespace Service
             await _repositories.SaveChangesAsync();
         }
 
-        public async Task<(IEnumerable<IShapedObject> items, PagingMetaData metaData)> GetEmployeesOfCompany(Guid companyId,
+        public async Task<(IEnumerable<ShapedEntity> items, PagingMetaData metaData)> GetEmployeesOfCompany(Guid companyId,
             EmployeeRequestParameters requestParameters)
         {
             if (!requestParameters.IsValidAgeRange)
@@ -67,7 +66,7 @@ namespace Service
 
             IEnumerable<GetEmployeeDto> employeeDtos = _mapper.Map<IEnumerable<GetEmployeeDto>>(pagedEmployees.Items);
 
-            IEnumerable<IShapedObject> shapedDtos = _dataShaper.ShapeData(employeeDtos, requestParameters.Fields);
+            var shapedDtos = _dataShaper.ShapeData(employeeDtos, requestParameters.Fields);
 
             return (shapedDtos, pagedEmployees.MetaData);
         }

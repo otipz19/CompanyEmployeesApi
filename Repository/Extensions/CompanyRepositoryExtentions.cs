@@ -19,7 +19,7 @@ namespace Repository.Extensions
 
             return query.Where(c => c.Name.ToLower().Contains(searchTerm)
                 || c.Address.ToLower().Contains(searchTerm)
-                || c.Country.ToLower().Contains(searchTerm));
+                || c.Country!.ToLower().Contains(searchTerm));
         }
 
         public static IQueryable<Company> OrderCompanies(this IQueryable<Company> query,
