@@ -1,14 +1,14 @@
 ﻿using Entities.Models;
+using Service.Contracts.DataShaping;
 using Shared.DTO.Employee;
 using Shared.DTO.RequestFeatures;
 using Shared.DTO.RequestFeatures.Paging;
-using System.Dynamic;
 
 namespace Service.Contracts
 {
     public interface IEmployeeService
     {
-        public Task<(IEnumerable<ExpandoObject> items, PagingMetaData metaData)> GetEmployeesOfCompany(Guid companyId,
+        public Task<(IEnumerable<IShapedObject> items, PagingMetaData metaData)> GetEmployeesOfCompany(Guid companyId,
             EmployeeRequestParameters requestParameters);
 
         public Task<GetEmployeeDto> GetEmployeeOfCompany(Guid companyId, Guid employeeId);

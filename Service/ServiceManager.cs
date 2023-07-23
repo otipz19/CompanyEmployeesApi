@@ -1,6 +1,5 @@
 ﻿using AutoMapper;
-using Contracts.DataShaping;
-using Contracts.LoggerService;
+using Service.Contracts.DataShaping;
 using Contracts.Repository;
 using Service.Contracts;
 

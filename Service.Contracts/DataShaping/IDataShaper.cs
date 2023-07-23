@@ -1,11 +1,12 @@
-﻿using System.Dynamic;
+﻿using Service.Contracts.DataShaping;
+using System.Dynamic;
 
-namespace Contracts.DataShaping
+namespace Service.Contracts.DataShaping
 {
     public interface IDataShaper
     {
-        public IEnumerable<ExpandoObject> ShapeData<T>(IEnumerable<T> items, string? fieldsString);
+        public IEnumerable<IShapedObject> ShapeData<T>(IEnumerable<T> items, string? fieldsString);
 
-        public ExpandoObject ShapeData<T>(T item, string? fieldsString);
+        public IShapedObject ShapeData<T>(T item, string? fieldsString);
     }
 }

@@ -1,5 +1,5 @@
 ﻿using AutoMapper;
-using Contracts.DataShaping;
+using Service.Contracts.DataShaping;
 using Contracts.Repository;
 using Entities.Exceptions;
 using Entities.Models;

@@ -1,6 +1,5 @@
 ﻿using AutoMapper;
-using Contracts.DataShaping;
-using Contracts.LoggerService;
+using Service.Contracts.DataShaping;
 using Contracts.Repository;
 using Entities.Exceptions;
 using Entities.Models;
@@ -9,7 +8,6 @@ using Shared.DTO.Company;
 using Shared.DTO.RequestFeatures;
 using Shared.DTO.RequestFeatures.Paging;
 using System.Dynamic;
-using System.Formats.Asn1;
 
 namespace Service
 {
@@ -63,7 +61,7 @@ namespace Service
             await _repositories.SaveChangesAsync();
         }
 
-        public async Task<(IEnumerable<ExpandoObject> items, PagingMetaData metaData)> GetCompanies(
+        public async Task<(IEnumerable<IShapedObject> items, PagingMetaData metaData)> GetCompanies(
             CompanyRequestParameters requestParameters)
         {
             PagedList<Company> pagedCompanies = await _repositories.Companies
@@ -71,12 +69,12 @@ namespace Service
 
             IEnumerable<GetCompanyDto> companiesDtos = _mapper.Map<IEnumerable<GetCompanyDto>>(pagedCompanies.Items);
 
-            IEnumerable<ExpandoObject> shapedDtos = _dataShaper.ShapeData(companiesDtos, requestParameters.Fields);
+            IEnumerable<IShapedObject> shapedDtos = _dataShaper.ShapeData(companiesDtos, requestParameters.Fields);
 
             return (shapedDtos, pagedCompanies.MetaData);
         }
 
-        public async Task<(IEnumerable<ExpandoObject> items, PagingMetaData metaData)> GetCompaniesByIds(IEnumerable<Guid>? ids,
+        public async Task<(IEnumerable<IShapedObject> items, PagingMetaData metaData)> GetCompaniesByIds(IEnumerable<Guid>? ids,
             CompanyRequestParameters requestParameters)
         {
             if (ids is null)
@@ -90,7 +88,7 @@ namespace Service
 
             IEnumerable<GetCompanyDto> companiesDtos = _mapper.Map<IEnumerable<GetCompanyDto>>(pagedCompanies.Items);
 
-            IEnumerable<ExpandoObject> shapedDtos = _dataShaper.ShapeData(companiesDtos, requestParameters.Fields);
+            IEnumerable<IShapedObject> shapedDtos = _dataShaper.ShapeData(companiesDtos, requestParameters.Fields);
 
             return (shapedDtos, pagedCompanies.MetaData);
         }

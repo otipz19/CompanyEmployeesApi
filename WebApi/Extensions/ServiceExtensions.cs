@@ -1,4 +1,4 @@
-﻿using Contracts.DataShaping;
+﻿using Service.Contracts.DataShaping;
 using Contracts.LoggerService;
 using Contracts.Repository;
 using LoggerService;
@@ -6,7 +6,6 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Formatters;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
-using Presentation.ActionFilters;
 using Repository;
 using Service;
 using Service.Contracts;

@@ -1,5 +1,5 @@
-﻿using Contracts.DataShaping;
-using System.Dynamic;
+﻿using Service.Contracts.DataShaping;
+using Shared.DTO.Expando;
 using System.Reflection;
 
 namespace Service.DataShaping
@@ -18,13 +18,13 @@ namespace Service.DataShaping
             _propertiesOfRegisteredTypes.Add(type, type.GetProperties());
         }
 
-        public IEnumerable<ExpandoObject> ShapeData<T>(IEnumerable<T> items, string? fieldsString)
+        public IEnumerable<IShapedObject> ShapeData<T>(IEnumerable<T> items, string? fieldsString)
         {
             var properties = GetRequiredProperties(fieldsString, typeof(T));
             return FetchData(items, properties);
         }
 
-        public ExpandoObject ShapeData<T>(T item, string? fieldsString)
+        public IShapedObject ShapeData<T>(T item, string? fieldsString)
         {
             var properties = GetRequiredProperties(fieldsString, typeof(T));
             return FetchData(item, properties);
@@ -71,22 +71,22 @@ namespace Service.DataShaping
             return requiredProperties;
         }
 
-        private IEnumerable<ExpandoObject> FetchData<T>(IEnumerable<T> items, IEnumerable<PropertyInfo> properties)
+        private IEnumerable<ShapedObject> FetchData<T>(IEnumerable<T> items, IEnumerable<PropertyInfo> properties)
         {
             return items.Select(i => FetchData(i, properties)).ToArray();
         }
 
-        private ExpandoObject FetchData<T>(T item, IEnumerable<PropertyInfo> properties)
+        private ShapedObject FetchData<T>(T item, IEnumerable<PropertyInfo> properties)
         {
-            var expandoObject = new ExpandoObject();
+            var shapedObject = new ShapedObject();
 
             foreach(var property in properties)
             {
                 var value = property.GetValue(item);
-                expandoObject.TryAdd(property.Name, value);
+                shapedObject.TryAdd(property.Name, value);
             }
 
-            return expandoObject;
+            return shapedObject;
         }
     }
 }

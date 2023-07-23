@@ -1,13 +1,13 @@
-﻿using System.Collections;
+﻿using Service.Contracts.DataShaping;
+using System.Collections;
 using System.Diagnostics.CodeAnalysis;
 using System.Dynamic;
 using System.Xml;
 using System.Xml.Schema;
-using System.Xml.Serialization;
 
 namespace Shared.DTO.Expando
 {
-    public class ShapedObject : DynamicObject, IDictionary<string, object?>, IXmlSerializable
+    public class ShapedObject : DynamicObject, IShapedObject
     {
         private const string RootElement = nameof(ShapedObject);
 

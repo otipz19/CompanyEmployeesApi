@@ -1,4 +1,5 @@
 ﻿using Entities.Models;
+using Service.Contracts.DataShaping;
 using Shared.DTO.Company;
 using Shared.DTO.RequestFeatures;
 using Shared.DTO.RequestFeatures.Paging;
@@ -8,10 +9,10 @@ namespace Service.Contracts
 {
     public interface ICompanyService
     {
-        public Task<(IEnumerable<ExpandoObject> items, PagingMetaData metaData)> GetCompanies(
+        public Task<(IEnumerable<IShapedObject> items, PagingMetaData metaData)> GetCompanies(
             CompanyRequestParameters requestParameters);
 
-        public Task<(IEnumerable<ExpandoObject> items, PagingMetaData metaData)> GetCompaniesByIds(IEnumerable<Guid> ids,
+        public Task<(IEnumerable<IShapedObject> items, PagingMetaData metaData)> GetCompaniesByIds(IEnumerable<Guid> ids,
             CompanyRequestParameters requestParameters);
 
         public Task<GetCompanyDto> GetCompany(Guid id);
