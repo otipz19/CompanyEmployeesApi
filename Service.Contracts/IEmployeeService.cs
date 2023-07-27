@@ -3,13 +3,14 @@ using Entities.DataShaping;
 using Shared.DTO.Employee;
 using Shared.DTO.RequestFeatures;
 using Shared.DTO.RequestFeatures.Paging;
+using Entities.LinkModels;
 
 namespace Service.Contracts
 {
     public interface IEmployeeService
     {
-        public Task<(IEnumerable<ShapedEntity> items, PagingMetaData metaData)> GetEmployeesOfCompany(Guid companyId,
-            EmployeeRequestParameters requestParameters);
+        public Task<(LinkResponse response, PagingMetaData metaData)> GetEmployeesOfCompany(Guid companyId,
+            LinkEmployeesParameters linkRequestParameters);
 
         public Task<GetEmployeeDto> GetEmployeeOfCompany(Guid companyId, Guid employeeId);
 

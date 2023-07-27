@@ -2,6 +2,6 @@
 {
     public class BaseLinksResourse
     {
-        public List<Link> Links { get; init; } = new();
+        public List<Link> Links { get; init; } = new List<Link>();
     }
 }

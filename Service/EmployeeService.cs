@@ -8,14 +8,23 @@ using Service.Contracts;
 using Shared.DTO.Employee;
 using Shared.DTO.RequestFeatures;
 using Shared.DTO.RequestFeatures.Paging;
+using Entities.LinkModels;
+using Contracts.Hateoas;
 
 namespace Service
 {
     public class EmployeeService : BaseService, IEmployeeService
     {
-        public EmployeeService(IRepositoryManager repositoryManager, IMapper mapper, IDataShaper dataShaper)
+        private readonly IEmployeeLinksGenerator _linksGenerator;
+
+        public EmployeeService(
+            IRepositoryManager repositoryManager,
+            IMapper mapper,
+            IDataShaper dataShaper,
+            IEmployeeLinksGenerator linksGenerator)
             : base(repositoryManager, mapper, dataShaper)
         {
+            _linksGenerator = linksGenerator;
         }
 
         public async Task<GetEmployeeDto> CreateEmployeeOfCompany(CreateEmployeeDto dto, Guid companyId)
@@ -51,10 +60,10 @@ namespace Service
             await _repositories.SaveChangesAsync();
         }
 
-        public async Task<(IEnumerable<ShapedEntity> items, PagingMetaData metaData)> GetEmployeesOfCompany(Guid companyId,
-            EmployeeRequestParameters requestParameters)
+        public async Task<(LinkResponse response, PagingMetaData metaData)> GetEmployeesOfCompany(Guid companyId,
+            LinkEmployeesParameters linkRequestParameters)
         {
-            if (!requestParameters.IsValidAgeRange)
+            if (!linkRequestParameters.RequestParameters.IsValidAgeRange)
             {
                 throw new AgeRangeBadRequestException();
             }
@@ -62,13 +71,17 @@ namespace Service
             await GetCompanyIfExistsAsNoTracking(companyId);
 
             PagedList<Employee> pagedEmployees = await _repositories.Employees
-                .GetEmployeesOfCompany(companyId, requestParameters, asNoTracking: true);
+                .GetEmployeesOfCompany(companyId, linkRequestParameters.RequestParameters, asNoTracking: true);
 
             IEnumerable<GetEmployeeDto> employeeDtos = _mapper.Map<IEnumerable<GetEmployeeDto>>(pagedEmployees.Items);
 
-            var shapedDtos = _dataShaper.ShapeData(employeeDtos, requestParameters.Fields);
+            var linkResponse = _linksGenerator.GenerateLinks(
+                employeeDtos,
+                linkRequestParameters.RequestParameters.Fields ?? "",
+                companyId,
+                linkRequestParameters.Context);
 
-            return (shapedDtos, pagedEmployees.MetaData);
+            return (linkResponse, pagedEmployees.MetaData);
         }
 
         public async Task<GetEmployeeDto> GetEmployeeOfCompany(Guid companyId, Guid employeeId)

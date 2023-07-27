@@ -2,16 +2,11 @@
 {
     public class LinkCollectionWrapper<T> : BaseLinksResourse
     {
-        public LinkCollectionWrapper()
-        {
-            Value = new List<T>();
-        }
-
-        public LinkCollectionWrapper(List<T> value)
+        public LinkCollectionWrapper(IEnumerable<T> value)
         {
             Value = value;
         }
 
-        public List<T> Value { get; init; }
+        public IEnumerable<T> Value { get; init; }
     }
 }

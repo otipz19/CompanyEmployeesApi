@@ -2,6 +2,7 @@
 using Service.Contracts.DataShaping;
 using Contracts.Repository;
 using Service.Contracts;
+using Contracts.Hateoas;
 
 namespace Service
 {
@@ -10,12 +11,14 @@ namespace Service
         private readonly Lazy<IEmployeeService> _employeeService;
         private readonly Lazy<ICompanyService> _companyService;
 
-        public ServiceManager(IRepositoryManager repositoryManager,
+        public ServiceManager(
+            IRepositoryManager repositoryManager,
             IMapper mapper,
-            IDataShaper dataShaper)
+            IDataShaper dataShaper,
+            IEmployeeLinksGenerator employeeLinksGenerator)
         {
             _employeeService = new Lazy<IEmployeeService>(
-                () => new EmployeeService(repositoryManager, mapper, dataShaper));
+                () => new EmployeeService(repositoryManager, mapper, dataShaper, employeeLinksGenerator));
             _companyService = new Lazy<ICompanyService>(
                 () => new CompanyService(repositoryManager, mapper, dataShaper));
         }

@@ -14,6 +14,8 @@ using Shared.DTO.Company;
 using Shared.DTO.Employee;
 using WebApi.Formatters;
 using Presentation.ActionFilters;
+using Contracts.Hateoas;
+using WebApi.Utility;
 
 namespace WebApi.Extensions
 {
@@ -54,7 +56,9 @@ namespace WebApi.Extensions
         public static IServiceCollection AddServices(this IServiceCollection services)
         {
             return services.AddScoped<IServiceManager, ServiceManager>()
-                .AddSingleton<ILoggerManager, LoggerManager>();
+                .AddSingleton<ILoggerManager, LoggerManager>()
+                .AddDataShaper()
+                .AddScoped<IEmployeeLinksGenerator, EmployeeLinksGenerator>();
         }
 
         public static IMvcBuilder AddControllersWithFormatters(this IServiceCollection services)
@@ -87,15 +91,7 @@ namespace WebApi.Extensions
                     .OfType<NewtonsoftJsonPatchInputFormatter>()
                     .First();
             }
-        }
-
-        public static IServiceCollection AddDataShaper(this IServiceCollection services)
-        {
-            services.AddScoped<IDataShaper, DataShaper>();
-            DataShaper.AddType<GetEmployeeDto>();
-            DataShaper.AddType<GetCompanyDto>();
-            return services;
-        }
+        } 
 
         public static IServiceCollection AddMediaTypes(this IServiceCollection services)
         {
@@ -119,7 +115,15 @@ namespace WebApi.Extensions
 
         public static IServiceCollection AddFilters(this IServiceCollection services)
         {
-            return services.AddScoped<ValidateMediaTypeActionFilter>();
+            return services.AddScoped<ValidateMediaTypeAttribute>();
+        }
+
+        private static IServiceCollection AddDataShaper(this IServiceCollection services)
+        {
+            services.AddScoped<IDataShaper, DataShaper>();
+            DataShaper.AddType<GetEmployeeDto>();
+            DataShaper.AddType<GetCompanyDto>();
+            return services;
         }
     }
 }

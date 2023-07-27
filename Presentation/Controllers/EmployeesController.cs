@@ -5,6 +5,7 @@ using Shared.DTO.Employee;
 using Presentation.ActionFilters;
 using System.Text.Json;
 using Shared.DTO.RequestFeatures;
+using Entities.LinkModels;
 
 namespace Presentation.Controllers
 {
@@ -20,15 +21,16 @@ namespace Presentation.Controllers
         }
 
         [HttpGet]
+        [ValidateMediaType]
         public async Task<ActionResult> GetEmployeesOfCompany(Guid companyId,
-            [FromQuery]EmployeeRequestParameters requestParameters)
+            [FromQuery] EmployeeRequestParameters requestParameters)
         {
-            var employees = await _services.EmployeeService
-                .GetEmployeesOfCompany(companyId, requestParameters);
+            var result = await _services.EmployeeService
+                .GetEmployeesOfCompany(companyId, new LinkEmployeesParameters(requestParameters, HttpContext));
 
-            Response.Headers.Add("X-Pagination", JsonSerializer.Serialize(employees.metaData));
+            Response.Headers.Add("X-Pagination", JsonSerializer.Serialize(result.metaData));
 
-            return Ok(employees.items);
+            return Ok(result.response.HasLinks ? result.response.LinkedEntities : result.response.ShapedEntities);
         }
 
         [HttpGet("{id:guid}")]
@@ -65,7 +67,7 @@ namespace Presentation.Controllers
         public async Task<ActionResult> PartiallyUpdateEmployee(Guid companyId, Guid id,
             JsonPatchDocument<UpdateEmployeeDto>? patchDoc)
         {
-            if(patchDoc is null)
+            if (patchDoc is null)
             {
                 return BadRequest();
             }

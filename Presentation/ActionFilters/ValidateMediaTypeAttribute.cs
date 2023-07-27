@@ -1,13 +1,13 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
-using Microsoft.Extensions.Primitives;
-using System.Net.Http.Headers;
+using Shared.DTO;
+using Microsoft.Net.Http.Headers;
 
 namespace Presentation.ActionFilters
 {
-    public class ValidateMediaTypeActionFilter : IActionFilter
+    public class ValidateMediaTypeAttribute : ActionFilterAttribute
     {
-        public void OnActionExecuting(ActionExecutingContext context)
+        public override void OnActionExecuting(ActionExecutingContext context)
         {
             if (!context.HttpContext.Request.Headers.TryGetValue("Accept", out var acceptHeader))
             {
@@ -16,18 +16,13 @@ namespace Presentation.ActionFilters
             }
 
             string? mediaType = acceptHeader.FirstOrDefault();
-            if(MediaTypeHeaderValue.TryParse(mediaType, out var outMediaType))
+            if(!MediaTypeHeaderValue.TryParse(mediaType, out var outMediaType))
             {
                 context.Result = new BadRequestObjectResult("Unrecognized media type");
                 return;
             }
 
-            context.HttpContext.Items.Add("AcceptHeaderMediaType", outMediaType);
-        }
-
-        public void OnActionExecuted(ActionExecutedContext context)
-        {
-            
+            context.HttpContext.Items.Add(Constants.MediaTypeItemsKey, outMediaType);
         }
     }
 }
