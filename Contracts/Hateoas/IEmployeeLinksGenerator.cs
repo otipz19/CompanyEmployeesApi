@@ -1,12 +1,12 @@
 ﻿using Entities.LinkModels;
-using Shared.DTO.Employee;
 using Microsoft.AspNetCore.Http;
+using Entities.DataShaping;
 
 namespace Contracts.Hateoas
 {
     public interface IEmployeeLinksGenerator
     {
-        public LinkResponse GenerateLinks(IEnumerable<GetEmployeeDto> employeeDtos, string fields,
+        public LinkResponse GenerateLinks(IEnumerable<ShapedObject> shapedEmployees, string? fields,
             Guid companyId, HttpContext context);
     }
 }

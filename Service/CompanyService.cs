@@ -1,5 +1,4 @@
 ﻿using AutoMapper;
-using Entities.DataShaping;
 using Contracts.Repository;
 using Entities.Exceptions;
 using Entities.Models;
@@ -8,14 +7,24 @@ using Shared.DTO.Company;
 using Shared.DTO.RequestFeatures;
 using Shared.DTO.RequestFeatures.Paging;
 using Service.Contracts.DataShaping;
+using Entities.DataShaping;
+using Entities.LinkModels;
+using Contracts.Hateoas;
 
 namespace Service
 {
     public class CompanyService : BaseService, ICompanyService
     {
-        public CompanyService(IRepositoryManager repositoryManager, IMapper mapper, IDataShaper dataShaper)
+        private readonly ICompanyLinksGenerator _linksGenerator;
+
+        public CompanyService(
+            IRepositoryManager repositoryManager,
+            IMapper mapper,
+            IDataShaper dataShaper,
+            ICompanyLinksGenerator linksGenerator)
             : base(repositoryManager, mapper, dataShaper)
         {
+            _linksGenerator = linksGenerator;
         }
 
         public async Task<GetCompanyDto> CreateCompany(CreateCompanyDto dto)
@@ -61,36 +70,27 @@ namespace Service
             await _repositories.SaveChangesAsync();
         }
 
-        public async Task<(IEnumerable<ShapedEntity> items, PagingMetaData metaData)> GetCompanies(
-            CompanyRequestParameters requestParameters)
+        public async Task<(LinkResponse response, PagingMetaData metaData)> GetCompanies(LinkCompaniesParameters linkParameters)
         {
             PagedList<Company> pagedCompanies = await _repositories.Companies
-                .GetCompanies(asNoTracking: true, requestParameters);
+                .GetCompanies(asNoTracking: true, linkParameters.RequestParameters);
 
-            IEnumerable<GetCompanyDto> companiesDtos = _mapper.Map<IEnumerable<GetCompanyDto>>(pagedCompanies.Items);
-
-            var shapedDtos = _dataShaper.ShapeData(companiesDtos, requestParameters.Fields);
-
-            return (shapedDtos, pagedCompanies.MetaData);
+            return GetCompanies(pagedCompanies, linkParameters);
         }
 
-        public async Task<(IEnumerable<ShapedEntity> items, PagingMetaData metaData)> GetCompaniesByIds(IEnumerable<Guid>? ids,
-            CompanyRequestParameters requestParameters)
+        public async Task<(LinkResponse response, PagingMetaData metaData)> GetCompaniesByIds(IEnumerable<Guid>? ids,
+            LinkCompaniesParameters linkParameters)
         {
             if (ids is null)
                 throw new IdParametersBadRequestException();
 
             PagedList<Company> pagedCompanies = await _repositories.Companies
-                .GetCompaniesByIds(ids, asNoTracking: true, requestParameters);
+                .GetCompaniesByIds(ids, asNoTracking: true, linkParameters.RequestParameters);
 
             if (pagedCompanies.MetaData.TotalCount != ids.Count())
                 throw new CollectionByIdsBadRequestException();
 
-            IEnumerable<GetCompanyDto> companiesDtos = _mapper.Map<IEnumerable<GetCompanyDto>>(pagedCompanies.Items);
-
-            var shapedDtos = _dataShaper.ShapeData(companiesDtos, requestParameters.Fields);
-
-            return (shapedDtos, pagedCompanies.MetaData);
+            return GetCompanies(pagedCompanies, linkParameters);
         }
 
         public async Task<GetCompanyDto> GetCompany(Guid id)
@@ -112,6 +112,22 @@ namespace Service
         {
             _mapper.Map(dto, entity);
             await _repositories.SaveChangesAsync();
+        }
+
+        private (LinkResponse response, PagingMetaData metaData) GetCompanies(
+            PagedList<Company> pagedCompanies,
+            LinkCompaniesParameters linkParameters)
+        {
+            IEnumerable<GetCompanyDto> companiesDtos = _mapper.Map<IEnumerable<GetCompanyDto>>(pagedCompanies.Items);
+
+            var shapedDtos = _dataShaper.ShapeData(companiesDtos, linkParameters.RequestParameters.Fields);
+
+            var linkResponse = _linksGenerator.GenerateLinks(
+                shapedDtos,
+                linkParameters.RequestParameters.Fields,
+                linkParameters.Context);
+
+            return (linkResponse, pagedCompanies.MetaData);
         }
     }
 }

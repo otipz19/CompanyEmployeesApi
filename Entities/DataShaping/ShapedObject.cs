@@ -12,7 +12,7 @@ namespace Entities.DataShaping
     {
         private const string RootElement = nameof(ShapedObject);
 
-        private IDictionary<string, object?> _expando;
+        private readonly IDictionary<string, object?> _expando;
 
         public ShapedObject()
         {

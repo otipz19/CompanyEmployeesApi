@@ -6,8 +6,8 @@ namespace Entities.LinkModels
     {
         public bool HasLinks { get; set; }
 
-        public IEnumerable<ShapedEntity> ShapedEntities { get; set; } = default!;
+        public IEnumerable<ShapedObject> ShapedEntities { get; set; } = default!;
 
-        public LinkCollectionWrapper<ShapedEntity> LinkedEntities { get; set; } = default!;
+        public LinkCollectionWrapper<ShapedObject> LinkedEntities { get; set; } = default!;
     }
 }

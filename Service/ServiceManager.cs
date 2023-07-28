@@ -15,12 +15,13 @@ namespace Service
             IRepositoryManager repositoryManager,
             IMapper mapper,
             IDataShaper dataShaper,
-            IEmployeeLinksGenerator employeeLinksGenerator)
+            IEmployeeLinksGenerator employeeLinksGenerator,
+            ICompanyLinksGenerator companyLinksGenerator)
         {
             _employeeService = new Lazy<IEmployeeService>(
                 () => new EmployeeService(repositoryManager, mapper, dataShaper, employeeLinksGenerator));
             _companyService = new Lazy<ICompanyService>(
-                () => new CompanyService(repositoryManager, mapper, dataShaper));
+                () => new CompanyService(repositoryManager, mapper, dataShaper, companyLinksGenerator));
         }
 
         public ICompanyService CompanyService => _companyService.Value;

@@ -3,16 +3,16 @@ using Entities.DataShaping;
 using Shared.DTO.Company;
 using Shared.DTO.RequestFeatures;
 using Shared.DTO.RequestFeatures.Paging;
+using Entities.LinkModels;
 
 namespace Service.Contracts
 {
     public interface ICompanyService
     {
-        public Task<(IEnumerable<ShapedEntity> items, PagingMetaData metaData)> GetCompanies(
-            CompanyRequestParameters requestParameters);
+        public Task<(LinkResponse response, PagingMetaData metaData)> GetCompanies(LinkCompaniesParameters linkParameters);
 
-        public Task<(IEnumerable<ShapedEntity> items, PagingMetaData metaData)> GetCompaniesByIds(IEnumerable<Guid> ids,
-            CompanyRequestParameters requestParameters);
+        public Task<(LinkResponse response, PagingMetaData metaData)> GetCompaniesByIds(IEnumerable<Guid>? ids,
+           LinkCompaniesParameters linkParameters);
 
         public Task<GetCompanyDto> GetCompany(Guid id);
 

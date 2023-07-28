@@ -75,9 +75,13 @@ namespace Service
 
             IEnumerable<GetEmployeeDto> employeeDtos = _mapper.Map<IEnumerable<GetEmployeeDto>>(pagedEmployees.Items);
 
-            var linkResponse = _linksGenerator.GenerateLinks(
+            IEnumerable<ShapedObject> shapedEmployees = _dataShaper.ShapeData(
                 employeeDtos,
-                linkRequestParameters.RequestParameters.Fields ?? "",
+                linkRequestParameters.RequestParameters.Fields);
+
+            var linkResponse = _linksGenerator.GenerateLinks(
+                shapedEmployees,
+                linkRequestParameters.RequestParameters.Fields,
                 companyId,
                 linkRequestParameters.Context);
 

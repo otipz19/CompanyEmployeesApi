@@ -58,7 +58,8 @@ namespace WebApi.Extensions
             return services.AddScoped<IServiceManager, ServiceManager>()
                 .AddSingleton<ILoggerManager, LoggerManager>()
                 .AddDataShaper()
-                .AddScoped<IEmployeeLinksGenerator, EmployeeLinksGenerator>();
+                .AddScoped<IEmployeeLinksGenerator, EmployeeLinksGenerator>()
+                .AddScoped<ICompanyLinksGenerator, CompanyLinksGenerator>();
         }
 
         public static IMvcBuilder AddControllersWithFormatters(this IServiceCollection services)
@@ -91,7 +92,7 @@ namespace WebApi.Extensions
                     .OfType<NewtonsoftJsonPatchInputFormatter>()
                     .First();
             }
-        } 
+        }
 
         public static IServiceCollection AddMediaTypes(this IServiceCollection services)
         {
@@ -100,13 +101,13 @@ namespace WebApi.Extensions
                 const string mediaType = "application/vnd.codemaze.hateoas+";
 
                 var jsonFormatter = config.OutputFormatters.OfType<SystemTextJsonOutputFormatter>().FirstOrDefault();
-                if(jsonFormatter is not null)
+                if (jsonFormatter is not null)
                 {
                     jsonFormatter.SupportedMediaTypes.Add(mediaType + "json");
                 }
 
                 var xmlFormatter = config.OutputFormatters.OfType<XmlDataContractSerializerOutputFormatter>().FirstOrDefault();
-                if(xmlFormatter is not null)
+                if (xmlFormatter is not null)
                 {
                     xmlFormatter.SupportedMediaTypes.Add(mediaType + "xml");
                 }

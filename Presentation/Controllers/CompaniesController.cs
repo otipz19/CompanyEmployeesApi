@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.JsonPatch;
+﻿using Entities.LinkModels;
+using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
 using Presentation.ActionFilters;
 using Presentation.ModelBinders;
@@ -21,24 +22,28 @@ namespace Presentation.Controllers
         }
 
         [HttpGet]
+        [ValidateMediaType]
         public async Task<ActionResult> GetCompanies([FromQuery]CompanyRequestParameters requestParameters)
         {
-            var companies = await _services.CompanyService.GetCompanies(requestParameters);
+            var companies = await _services.CompanyService
+                .GetCompanies(new LinkCompaniesParameters(requestParameters, HttpContext));
 
             Response.Headers.Add("X-Pagination", JsonSerializer.Serialize(companies.metaData));
 
-            return Ok(companies.items);
+            return Ok(companies.response.HasLinks ? companies.response.LinkedEntities : companies.response.ShapedEntities);
         }
 
         [HttpGet("collection/({ids})")]
+        [ValidateMediaType]
         public async Task<ActionResult> GetCompaniesByIds([FromQuery]CompanyRequestParameters requestParameters,
             [FromBody][ModelBinder(BinderType = typeof(ArrayModelBinder))]IEnumerable<Guid> ids)
         {
-            var companies = await _services.CompanyService.GetCompaniesByIds(ids, requestParameters);
+            var companies = await _services.CompanyService
+                .GetCompaniesByIds(ids, new LinkCompaniesParameters(requestParameters, HttpContext));
 
             Response.Headers.Add("X-Pagination", JsonSerializer.Serialize(companies.metaData));
 
-            return Ok(companies.items);
+            return Ok(companies.response.HasLinks ? companies.response.LinkedEntities : companies.response.ShapedEntities);
         }
 
         [HttpGet("{id:guid}")]
