@@ -21,6 +21,7 @@ namespace Presentation.Controllers
         }
 
         [HttpGet]
+        [HttpHead]
         [ValidateMediaType]
         public async Task<ActionResult> GetEmployeesOfCompany(Guid companyId,
             [FromQuery] EmployeeRequestParameters requestParameters)
@@ -34,6 +35,7 @@ namespace Presentation.Controllers
         }
 
         [HttpGet("{id:guid}")]
+        [HttpHead("{id:guid}")]
         public async Task<ActionResult> GetEmployeeOfCompany(Guid companyId, Guid id)
         {
             GetEmployeeDto employee = await _services.EmployeeService.GetEmployeeOfCompany(companyId, id);
@@ -83,6 +85,20 @@ namespace Presentation.Controllers
 
             await _services.EmployeeService.SaveChangesForPatch(toPatch.dto, toPatch.entity);
             return NoContent();
+        }
+
+        [HttpOptions]
+        public ActionResult GetEmployeesOptions()
+        {
+            HttpContext.Response.Headers.Add("Allow", "GET, OPTIONS, POST");
+            return Ok();
+        }
+
+        [HttpOptions("{id:guid}")]
+        public ActionResult GetEmployeeOptions()
+        {
+            HttpContext.Response.Headers.Add("Allow", "GET, OPTIONS, PUT, PATCH, DELETE");
+            return Ok();
         }
     }
 }

@@ -22,6 +22,7 @@ namespace Presentation.Controllers
         }
 
         [HttpGet]
+        [HttpHead]
         [ValidateMediaType]
         public async Task<ActionResult> GetCompanies([FromQuery]CompanyRequestParameters requestParameters)
         {
@@ -34,6 +35,7 @@ namespace Presentation.Controllers
         }
 
         [HttpGet("collection/({ids})")]
+        [HttpHead("collection/({ids})")]
         [ValidateMediaType]
         public async Task<ActionResult> GetCompaniesByIds([FromQuery]CompanyRequestParameters requestParameters,
             [FromBody][ModelBinder(BinderType = typeof(ArrayModelBinder))]IEnumerable<Guid> ids)
@@ -47,6 +49,7 @@ namespace Presentation.Controllers
         }
 
         [HttpGet("{id:guid}")]
+        [HttpHead("{id:guid}")]
         public async Task<ActionResult> GetCompany(Guid id)
         {
             GetCompanyDto company = await _services.CompanyService.GetCompany(id);
@@ -103,6 +106,20 @@ namespace Presentation.Controllers
 
             await _services.CompanyService.SaveChangesForPatch(toPatch.dto, toPatch.entity);
             return NoContent();
+        }
+
+        [HttpOptions]
+        public ActionResult GetCompaniesOptions()
+        {
+            HttpContext.Response.Headers.Add("Allow", "GET, OPTIONS, POST");
+            return Ok();
+        }
+
+        [HttpOptions("{id:guid}")]
+        public ActionResult GetCompanyOptions()
+        {
+            HttpContext.Response.Headers.Add("Allow", "GET, OPTIONS, PUT, PATCH, DELETE");
+            return Ok();
         }
     }
 }
