@@ -1,4 +1,5 @@
 ﻿using Entities.LinkModels;
+using Marvin.Cache.Headers;
 using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
 using Presentation.ActionFilters;
@@ -51,6 +52,8 @@ namespace Presentation.Controllers
 
         [HttpGet("{id:guid}")]
         [HttpHead("{id:guid}")]
+        [HttpCacheValidation(MustRevalidate = false)]
+        [HttpCacheExpiration(MaxAge = 600)]
         public async Task<ActionResult> GetCompany(Guid id)
         {
             GetCompanyDto company = await _services.CompanyService.GetCompany(id);

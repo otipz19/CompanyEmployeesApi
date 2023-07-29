@@ -150,6 +150,20 @@ namespace WebApi.Extensions
             });
         }
 
+        public static IServiceCollection ConfigureHttpCacheHeaders(this IServiceCollection services)
+        {
+            return services.AddHttpCacheHeaders(
+                expirationOpt =>
+                {
+                    expirationOpt.CacheLocation = Marvin.Cache.Headers.CacheLocation.Public;
+                    expirationOpt.MaxAge = 120;
+                },
+                validationOpt =>
+                {
+                    validationOpt.MustRevalidate = true;
+                });
+        }
+
         private static IServiceCollection AddDataShaper(this IServiceCollection services)
         {
             services.AddScoped<IDataShaper, DataShaper>();

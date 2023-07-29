@@ -34,6 +34,9 @@ namespace WebApi
 
             builder.Services.AddMediaTypes();
 
+            builder.Services.AddResponseCaching();
+            builder.Services.ConfigureHttpCacheHeaders();
+
             var app = builder.Build();
 
             // Configure the HTTP request pipeline.
@@ -54,6 +57,9 @@ namespace WebApi
             {
                 ForwardedHeaders = ForwardedHeaders.All,
             });
+
+            app.UseResponseCaching();
+            app.UseHttpCacheHeaders();
 
             app.UseCors(ServiceExtensions.CorsPolicy);
 
