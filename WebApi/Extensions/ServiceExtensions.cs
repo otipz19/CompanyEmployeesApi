@@ -96,22 +96,41 @@ namespace WebApi.Extensions
 
         public static IServiceCollection AddMediaTypes(this IServiceCollection services)
         {
-            return services.Configure<MvcOptions>(config =>
+            return services.Configure((Action<MvcOptions>)(config =>
             {
-                const string mediaType = "application/vnd.codemaze.hateoas+";
-
-                var jsonFormatter = config.OutputFormatters.OfType<SystemTextJsonOutputFormatter>().FirstOrDefault();
-                if (jsonFormatter is not null)
+                var mediaTypes = new string[]
                 {
-                    jsonFormatter.SupportedMediaTypes.Add(mediaType + "json");
+                    "application/vnd.codemaze.hateoas",
+                    "application/vnd.codemaze.apiroot",
+                };
+
+                AddToJsonFormatter(config, mediaTypes);
+                AddToXmlFormatter(config, mediaTypes);
+
+                static void AddToJsonFormatter(MvcOptions config, IEnumerable<string> mediaTypes)
+                {
+                    var jsonFormatter = config.OutputFormatters.OfType<SystemTextJsonOutputFormatter>().FirstOrDefault();
+                    if (jsonFormatter is not null)
+                    {
+                        foreach(var mediaType in mediaTypes)
+                        {
+                            jsonFormatter.SupportedMediaTypes.Add(mediaType + "+json");
+                        }
+                    }
                 }
 
-                var xmlFormatter = config.OutputFormatters.OfType<XmlDataContractSerializerOutputFormatter>().FirstOrDefault();
-                if (xmlFormatter is not null)
+                static void AddToXmlFormatter(MvcOptions config, IEnumerable<string> mediaTypes)
                 {
-                    xmlFormatter.SupportedMediaTypes.Add(mediaType + "xml");
+                    var xmlFormatter = config.OutputFormatters.OfType<XmlDataContractSerializerOutputFormatter>().FirstOrDefault();
+                    if (xmlFormatter is not null)
+                    {
+                        foreach(var mediaType in mediaTypes)
+                        {
+                            xmlFormatter.SupportedMediaTypes.Add(mediaType + "+xml");
+                        }
+                    }
                 }
-            });
+            }));
         }
 
         public static IServiceCollection AddFilters(this IServiceCollection services)
