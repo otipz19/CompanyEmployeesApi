@@ -9,6 +9,7 @@ using Entities.LinkModels;
 
 namespace Presentation.Controllers
 {
+    [ApiVersion("1.0")]
     [ApiController]
     [Route("api/companies/{companyId}/employees")]
     public class EmployeesController : ControllerBase

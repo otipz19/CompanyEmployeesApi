@@ -16,6 +16,7 @@ using WebApi.Formatters;
 using Presentation.ActionFilters;
 using Contracts.Hateoas;
 using WebApi.Utility;
+using Microsoft.AspNetCore.Mvc.Versioning;
 
 namespace WebApi.Extensions
 {
@@ -136,6 +137,17 @@ namespace WebApi.Extensions
         public static IServiceCollection AddFilters(this IServiceCollection services)
         {
             return services.AddScoped<ValidateMediaTypeAttribute>();
+        }
+
+        public static IServiceCollection ConfigureVersioning(this IServiceCollection services)
+        {
+            return services.AddApiVersioning(opt =>
+            {
+                opt.ReportApiVersions = true;
+                opt.AssumeDefaultVersionWhenUnspecified = true;
+                opt.DefaultApiVersion = new ApiVersion(1, 0);
+                opt.ApiVersionReader = new HeaderApiVersionReader("api-version");
+            });
         }
 
         private static IServiceCollection AddDataShaper(this IServiceCollection services)
