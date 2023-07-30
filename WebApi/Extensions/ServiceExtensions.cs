@@ -17,6 +17,7 @@ using Presentation.ActionFilters;
 using Contracts.Hateoas;
 using WebApi.Utility;
 using Microsoft.AspNetCore.Mvc.Versioning;
+using AspNetCoreRateLimit;
 
 namespace WebApi.Extensions
 {
