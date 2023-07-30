@@ -17,6 +17,8 @@ using Presentation.ActionFilters;
 using Contracts.Hateoas;
 using WebApi.Utility;
 using Microsoft.AspNetCore.Mvc.Versioning;
+using Microsoft.AspNetCore.RateLimiting;
+using WebApi.Options;
 
 namespace WebApi.Extensions
 {
@@ -162,6 +164,26 @@ namespace WebApi.Extensions
                 {
                     validationOpt.MustRevalidate = true;
                 });
+        }
+
+        public static IServiceCollection ConfigureRateLimiting(this IServiceCollection services, IConfiguration configuration)
+        {
+            var rateLimitOptions = new FixedWindowRateLimitOptions();
+            configuration.GetSection("RateLimiting").GetSection("FixedWindowRateLimit").Bind(rateLimitOptions);
+
+            services.AddRateLimiter(_ =>
+            {
+                _.AddFixedWindowLimiter(policyName: "fixed", options =>
+                {
+                    options.PermitLimit = rateLimitOptions.PermitLimit;
+                    options.Window = TimeSpan.FromSeconds(rateLimitOptions.Window);
+                    options.QueueLimit = rateLimitOptions.QueueLimit;
+                    options.AutoReplenishment = rateLimitOptions.AutoReplenishment;
+                    options.QueueProcessingOrder = System.Threading.RateLimiting.QueueProcessingOrder.OldestFirst;
+                });
+            });
+
+            return services;
         }
 
         private static IServiceCollection AddDataShaper(this IServiceCollection services)

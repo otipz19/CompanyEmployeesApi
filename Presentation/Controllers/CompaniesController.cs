@@ -2,6 +2,7 @@
 using Marvin.Cache.Headers;
 using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.RateLimiting;
 using Presentation.ActionFilters;
 using Presentation.ModelBinders;
 using Service.Contracts;
@@ -14,6 +15,7 @@ namespace Presentation.Controllers
     [ApiVersion("1.0")]
     [ApiController]
     [Route("api/companies")]
+    [EnableRateLimiting("fixed")]
     public class CompaniesController : ControllerBase
     {
         private readonly IServiceManager _services;

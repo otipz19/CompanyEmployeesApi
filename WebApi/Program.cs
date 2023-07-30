@@ -37,6 +37,8 @@ namespace WebApi
             builder.Services.AddResponseCaching();
             builder.Services.ConfigureHttpCacheHeaders();
 
+            builder.Services.ConfigureRateLimiting(builder.Configuration);
+
             var app = builder.Build();
 
             // Configure the HTTP request pipeline.
@@ -57,6 +59,8 @@ namespace WebApi
             {
                 ForwardedHeaders = ForwardedHeaders.All,
             });
+
+            app.UseRateLimiter();
 
             app.UseResponseCaching();
             app.UseHttpCacheHeaders();
