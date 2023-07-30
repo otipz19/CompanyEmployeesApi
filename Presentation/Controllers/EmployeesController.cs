@@ -6,14 +6,12 @@ using Presentation.ActionFilters;
 using System.Text.Json;
 using Shared.DTO.RequestFeatures;
 using Entities.LinkModels;
-using Microsoft.AspNetCore.RateLimiting;
 
 namespace Presentation.Controllers
 {
     [ApiVersion("1.0")]
     [ApiController]
     [Route("api/companies/{companyId}/employees")]
-    [EnableRateLimiting("fixed")]
     public class EmployeesController : ControllerBase
     {
         private readonly IServiceManager _services;
