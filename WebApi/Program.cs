@@ -1,3 +1,4 @@
+using AspNetCoreRateLimit;
 using Contracts.LoggerService;
 using Microsoft.AspNetCore.HttpOverrides;
 using NLog;
@@ -37,6 +38,9 @@ namespace WebApi
             builder.Services.AddResponseCaching();
             builder.Services.ConfigureHttpCacheHeaders();
 
+            builder.Services.ConfigureRateLimiting();
+            builder.Services.AddHttpContextAccessor();
+
             var app = builder.Build();
 
             // Configure the HTTP request pipeline.
@@ -60,6 +64,8 @@ namespace WebApi
 
             app.UseResponseCaching();
             app.UseHttpCacheHeaders();
+
+            app.UseIpRateLimiting();
 
             app.UseCors(ServiceExtensions.CorsPolicy);
 
