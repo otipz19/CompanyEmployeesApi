@@ -176,7 +176,7 @@ namespace WebApi.Extensions
                 opt.GeneralRules = new() { new RateLimitRule()
                 {
                     Endpoint = "*",
-                    Limit = 3,
+                    Limit = 30,
                     Period = "5m",
                 } };
             });

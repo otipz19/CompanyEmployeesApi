@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using Entities.Models;
+using Shared.DTO.Authentication;
 using Shared.DTO.Company;
 using Shared.DTO.Employee;
 
@@ -11,6 +12,7 @@ namespace WebApi
         {
             MapCompany();
             MapEmployee();
+            MapUser();
         }
 
         private void MapEmployee()
@@ -29,6 +31,11 @@ namespace WebApi
                             });
             CreateMap<CreateCompanyDto, Company>();
             CreateMap<UpdateCompanyDto, Company>().ReverseMap();
+        }
+
+        private void MapUser()
+        {
+            CreateMap<RegisterUserDto, User>();
         }
     }
 }
