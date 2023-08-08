@@ -18,6 +18,8 @@ using Contracts.Hateoas;
 using WebApi.Utility;
 using Microsoft.AspNetCore.Mvc.Versioning;
 using AspNetCoreRateLimit;
+using Entities.Models;
+using Microsoft.AspNetCore.Identity;
 
 namespace WebApi.Extensions
 {
@@ -185,6 +187,21 @@ namespace WebApi.Extensions
             services.AddSingleton<IProcessingStrategy, AsyncKeyLockProcessingStrategy>();
 
             return services;
+        }
+
+        public static IServiceCollection ConfigureIdentity(this IServiceCollection services)
+        {
+            return services.AddIdentity<User, IdentityRole>(opt =>
+            {
+                opt.Password.RequireDigit = true;
+                opt.Password.RequireNonAlphanumeric = false;
+                opt.Password.RequireUppercase = false;
+                opt.Password.RequireLowercase = false;
+                opt.User.RequireUniqueEmail = true;
+            })
+            .AddDefaultTokenProviders()
+            .AddEntityFrameworkStores<RepositoryContext>()
+            .Services;
         }
 
         private static IServiceCollection AddDataShaper(this IServiceCollection services)
