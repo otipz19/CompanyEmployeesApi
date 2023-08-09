@@ -26,7 +26,7 @@ namespace Presentation.Controllers
 
             if (!result.Succeeded)
             {
-                foreach(var error in result.Errors)
+                foreach (var error in result.Errors)
                 {
                     ModelState.TryAddModelError(error.Code, error.Description);
                 }
@@ -35,6 +35,21 @@ namespace Presentation.Controllers
             }
 
             return StatusCode(StatusCodes.Status201Created);
+        }
+
+        [HttpPost("login")]
+        [ValidateArguments]
+        public async Task<ActionResult> AuthenticateUser(AuthenticateUserDto dto)
+        {
+            var result = await _serviceManager.AuthenticationService.AuthenticateUser(dto);
+
+            if (!result.isSuccess)
+            {
+                return Unauthorized();
+            }
+
+            string jwtToken = await _serviceManager.AuthenticationService.CreateToken(result.user!);
+            return Ok(new { Token = jwtToken });
         }
     }
 }

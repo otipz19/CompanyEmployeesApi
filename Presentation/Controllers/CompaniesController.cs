@@ -1,5 +1,6 @@
 ﻿using Entities.LinkModels;
 using Marvin.Cache.Headers;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
 using Presentation.ActionFilters;
@@ -26,6 +27,7 @@ namespace Presentation.Controllers
         [HttpGet]
         [HttpHead]
         [ValidateMediaType]
+        [Authorize(AuthenticationSchemes = "Bearer")]
         public async Task<ActionResult> GetCompanies([FromQuery]CompanyRequestParameters requestParameters)
         {
             var companies = await _services.CompanyService
