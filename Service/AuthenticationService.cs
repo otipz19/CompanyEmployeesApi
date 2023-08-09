@@ -6,10 +6,12 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using Service.Contracts;
+using Service.Parameters;
 using Shared.DTO.Authentication;
 using Shared.DTO.Options;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
+using System.Security.Cryptography;
 using System.Text;
 
 namespace Service
@@ -44,9 +46,9 @@ namespace Service
 
             if (result.Succeeded)
             {
-                foreach(string role in dto.Roles)
+                foreach (string role in dto.Roles)
                 {
-                    if(! await _roleManager.RoleExistsAsync(role))
+                    if (!await _roleManager.RoleExistsAsync(role))
                     {
                         throw new RoleDoesNotExistsException(role);
                     }
@@ -72,12 +74,19 @@ namespace Service
             return (result, user);
         }
 
-        public async Task<string> CreateToken(User user)
+        public async Task<TokensDto> CreateToken(User user)
         {
             SigningCredentials credentials = GetSigningCredentials();
             IEnumerable<Claim> claims = await GetClaims(user);
             JwtSecurityToken token = GenerateToken(credentials, claims);
-            return new JwtSecurityTokenHandler().WriteToken(token);
+            string accessToken = new JwtSecurityTokenHandler().WriteToken(token);
+
+            string refreshToken = GenerateRefreshToken();
+            user.RefreshToken = refreshToken;
+            user.RefreshTokenExpiryTime = DateTime.Now.AddDays(7);
+            await _userManager.UpdateAsync(user);
+
+            return new TokensDto(accessToken, refreshToken);
         }
 
         private SigningCredentials GetSigningCredentials()
@@ -112,6 +121,33 @@ namespace Service
                 expires: expires,
                 issuer: _jwtSettings.ValidIssuer,
                 audience: _jwtSettings.ValidAudience);
+        }
+
+        private string GenerateRefreshToken()
+        {
+            var randomNum = new byte[32];
+            using var rng = RandomNumberGenerator.Create();
+            rng.GetBytes(randomNum);
+            return Convert.ToBase64String(randomNum);
+        }
+
+        private ClaimsPrincipal GetClaimsPrincipalFromExpiredToken(string token)
+        {
+            var validationParameters = new DefaultTokenValidationParameters(_jwtSettings);
+
+            var tokenHadler = new JwtSecurityTokenHandler();
+            SecurityToken securityToken;
+
+            ClaimsPrincipal principal = tokenHadler.ValidateToken(token, validationParameters, out securityToken);
+
+            var jwtSecurityToken = securityToken as JwtSecurityToken;
+            if (jwtSecurityToken is null || !jwtSecurityToken.Header.Alg
+                .Equals(SecurityAlgorithms.HmacSha256, StringComparison.OrdinalIgnoreCase))
+            {
+                throw new SecurityTokenException("Invalid token");
+            }
+
+            return principal;
         }
     }
 }

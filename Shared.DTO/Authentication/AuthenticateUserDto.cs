@@ -2,7 +2,7 @@
 
 namespace Shared.DTO.Authentication
 {
-    public class AuthenticateUserDto
+    public record AuthenticateUserDto
     {
         [Required]
         public string UserName { get; init; } = default!;

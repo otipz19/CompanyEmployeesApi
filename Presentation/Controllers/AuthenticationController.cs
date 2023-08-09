@@ -48,8 +48,8 @@ namespace Presentation.Controllers
                 return Unauthorized();
             }
 
-            string jwtToken = await _serviceManager.AuthenticationService.CreateToken(result.user!);
-            return Ok(new { Token = jwtToken });
+            TokensDto tokens = await _serviceManager.AuthenticationService.CreateToken(result.user!);
+            return Ok(tokens);
         }
     }
 }

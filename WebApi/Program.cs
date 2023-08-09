@@ -2,6 +2,7 @@ using AspNetCoreRateLimit;
 using Contracts.LoggerService;
 using Microsoft.AspNetCore.HttpOverrides;
 using NLog;
+using Service.Parameters;
 using Shared.DTO.Options;
 using WebApi.Extensions;
 
@@ -39,8 +40,9 @@ namespace WebApi
             builder.Services.ConfigureRateLimiting();
             builder.Services.AddHttpContextAccessor();
 
-            builder.Services.ConfigureJwt(builder.Configuration);
+            builder.Services.AddAuthentication();
             builder.Services.ConfigureIdentity();
+            builder.Services.ConfigureJwt(builder.Configuration);
             builder.Services.Configure<JwtSettings>(builder.Configuration.GetSection("JwtSettings"));
 
             var app = builder.Build();

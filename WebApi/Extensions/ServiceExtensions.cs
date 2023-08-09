@@ -18,6 +18,7 @@ using Service;
 using Service.Contracts;
 using Service.Contracts.DataShaping;
 using Service.DataShaping;
+using Service.Parameters;
 using Shared.DTO.Company;
 using Shared.DTO.Employee;
 using Shared.DTO.Options;
@@ -221,16 +222,7 @@ namespace WebApi.Extensions
             })
             .AddJwtBearer(opt =>
             {
-                opt.TokenValidationParameters = new TokenValidationParameters
-                {
-                    ValidateIssuer = true,
-                    ValidateAudience = true,
-                    ValidateLifetime = true,
-                    ValidateIssuerSigningKey = true,
-                    ValidIssuer = jwtSettings.ValidIssuer,
-                    ValidAudience = jwtSettings.ValidAudience,
-                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtSettings.SecretKey)),
-                };
+                opt.TokenValidationParameters = new DefaultTokenValidationParameters(jwtSettings);
             });
 
             return services;

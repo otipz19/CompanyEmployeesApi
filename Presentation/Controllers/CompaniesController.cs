@@ -27,7 +27,7 @@ namespace Presentation.Controllers
         [HttpGet]
         [HttpHead]
         [ValidateMediaType]
-        [Authorize(AuthenticationSchemes = "Bearer")]
+        [Authorize]
         public async Task<ActionResult> GetCompanies([FromQuery]CompanyRequestParameters requestParameters)
         {
             var companies = await _services.CompanyService
