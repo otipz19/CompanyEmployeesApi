@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Presentation.ActionFilters;
 using Service.Contracts;
@@ -21,7 +22,7 @@ namespace Presentation.Controllers
         [ValidateArguments]
         public async Task<ActionResult> RegisterUser(RegisterUserDto dto)
         {
-            var result = await _serviceManager.AuthenticationService.RegisterUser(dto);
+            IdentityResult result = await _serviceManager.AuthenticationService.RegisterUser(dto);
 
             if (!result.Succeeded)
             {

@@ -10,7 +10,6 @@ namespace Presentation.ActionFilters
             if (!context.ModelState.IsValid)
             {
                 context.Result = new UnprocessableEntityObjectResult(context.ModelState);
-                return;
             }
         }
     }

@@ -38,7 +38,7 @@ namespace WebApi
             builder.Services.ConfigureRateLimiting();
             builder.Services.AddHttpContextAccessor();
 
-            builder.Services.AddAuthentication();
+            builder.Services.ConfigureJwt(builder.Configuration);
             builder.Services.ConfigureIdentity();
 
             var app = builder.Build();

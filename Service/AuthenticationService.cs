@@ -1,9 +1,7 @@
 ﻿using AutoMapper;
-using Contracts.LoggerService;
 using Entities.Exceptions;
 using Entities.Models;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.Extensions.Configuration;
 using Service.Contracts;
 using Shared.DTO.Authentication;
 
@@ -29,7 +27,7 @@ namespace Service
         {
             User user = _mapper.Map<User>(dto);
 
-            var result = await _userManager.CreateAsync(user, dto.Password);
+            IdentityResult result = await _userManager.CreateAsync(user, dto.Password);
 
             if (result.Succeeded)
             {

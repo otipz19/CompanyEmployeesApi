@@ -1,25 +1,30 @@
-﻿using Service.Contracts.DataShaping;
+﻿using AspNetCoreRateLimit;
+using Contracts.Hateoas;
 using Contracts.LoggerService;
 using Contracts.Repository;
+using Entities.Models;
 using LoggerService;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Formatters;
+using Microsoft.AspNetCore.Mvc.Versioning;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Options;
+using Microsoft.IdentityModel.Tokens;
+using Presentation.ActionFilters;
 using Repository;
 using Service;
 using Service.Contracts;
+using Service.Contracts.DataShaping;
 using Service.DataShaping;
 using Shared.DTO.Company;
 using Shared.DTO.Employee;
+using System.Text;
 using WebApi.Formatters;
-using Presentation.ActionFilters;
-using Contracts.Hateoas;
+using WebApi.Options;
 using WebApi.Utility;
-using Microsoft.AspNetCore.Mvc.Versioning;
-using AspNetCoreRateLimit;
-using Entities.Models;
-using Microsoft.AspNetCore.Identity;
 
 namespace WebApi.Extensions
 {
@@ -202,6 +207,34 @@ namespace WebApi.Extensions
             .AddDefaultTokenProviders()
             .AddEntityFrameworkStores<RepositoryContext>()
             .Services;
+        }
+
+        public static IServiceCollection ConfigureJwt(this IServiceCollection services, IConfiguration configuration)
+        {
+            var jwtSettings = new JwtSettings();
+            configuration.GetSection("JwtSettings").Bind(jwtSettings);
+
+            services.AddAuthentication(opt =>
+            {
+                opt.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+                opt.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+            })
+            .AddJwtBearer(opt =>
+            {
+                opt.TokenValidationParameters = new TokenValidationParameters
+                {
+                    ValidateIssuer = true,
+                    ValidateAudience = true,
+                    ValidateLifetime = true,
+                    ValidateIssuerSigningKey = true,
+                    ValidIssuer = jwtSettings.ValidIssuer,
+                    ValidAudience = jwtSettings.ValidAudience,
+                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtSettings.SecretKey ??
+                        throw new ApplicationException("No secret key for JWT provided"))),
+                };
+            });
+
+            return services;
         }
 
         private static IServiceCollection AddDataShaper(this IServiceCollection services)
