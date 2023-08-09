@@ -76,10 +76,7 @@ namespace Service
 
         public async Task<TokensDto> CreateToken(User user)
         {
-            SigningCredentials credentials = GetSigningCredentials();
-            IEnumerable<Claim> claims = await GetClaims(user);
-            JwtSecurityToken token = GenerateToken(credentials, claims);
-            string accessToken = new JwtSecurityTokenHandler().WriteToken(token);
+            string accessToken = await CreateAccessToken(user);
 
             string refreshToken = GenerateRefreshToken();
             user.RefreshToken = refreshToken;
@@ -87,6 +84,35 @@ namespace Service
             await _userManager.UpdateAsync(user);
 
             return new TokensDto(accessToken, refreshToken);
+        }
+
+
+        public async Task<TokensDto> RefreshToken(TokensDto tokens)
+        {
+            ClaimsPrincipal principal = GetClaimsPrincipalFromExpiredToken(tokens.AccessToken);
+
+            if (principal.Identity is null || principal.Identity.Name is null)
+            {
+                throw new RefreshTokenBadRequestException();
+            }
+
+            User? user = await _userManager.FindByNameAsync(principal.Identity.Name);
+
+            if (user is null || user.RefreshToken != tokens.RefreshToken || user.RefreshTokenExpiryTime <= DateTime.Now)
+            {
+                throw new RefreshTokenBadRequestException();
+            }
+
+            return new TokensDto(await CreateAccessToken(user), tokens.RefreshToken);
+        }
+
+        private async Task<string> CreateAccessToken(User user)
+        {
+            SigningCredentials credentials = GetSigningCredentials();
+            IEnumerable<Claim> claims = await GetClaims(user);
+            JwtSecurityToken token = GenerateToken(credentials, claims);
+            string accessToken = new JwtSecurityTokenHandler().WriteToken(token);
+            return accessToken;
         }
 
         private SigningCredentials GetSigningCredentials()
@@ -138,16 +164,25 @@ namespace Service
             var tokenHadler = new JwtSecurityTokenHandler();
             SecurityToken securityToken;
 
-            ClaimsPrincipal principal = tokenHadler.ValidateToken(token, validationParameters, out securityToken);
+            ClaimsPrincipal principal;
+            try
+            {
+                principal = tokenHadler.ValidateToken(token, validationParameters, out securityToken);
+            }
+            catch
+            {
+                throw new SecurityTokenBadRequestException();
+            }
 
             var jwtSecurityToken = securityToken as JwtSecurityToken;
             if (jwtSecurityToken is null || !jwtSecurityToken.Header.Alg
                 .Equals(SecurityAlgorithms.HmacSha256, StringComparison.OrdinalIgnoreCase))
             {
-                throw new SecurityTokenException("Invalid token");
+                throw new SecurityTokenBadRequestException();
             }
 
             return principal;
         }
+
     }
 }
