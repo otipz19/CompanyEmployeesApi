@@ -5,6 +5,11 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
 
+	<PropertyGroup>
+		<DocumentationFile>Presentation.xml</DocumentationFile>
+		<NoWarn>1591</NoWarn>
+	</PropertyGroup>
+
   <ItemGroup>
     <PackageReference Include="Marvin.Cache.Headers" Version="6.1.0" />
     <PackageReference Include="Microsoft.AspNetCore.JsonPatch" Version="7.0.9" />

@@ -43,7 +43,9 @@ namespace WebApi
             builder.Services.AddAuthentication();
             builder.Services.ConfigureIdentity();
             builder.Services.ConfigureJwt(builder.Configuration);
-            builder.Services.Configure<JwtSettings>(builder.Configuration.GetSection("JwtSettings"));
+            builder.Services.Configure<JwtSettings>(builder.Configuration.GetSection(JwtSettings.Section));
+
+            builder.Services.ConfigureSwagger();
 
             var app = builder.Build();
 
@@ -56,6 +58,13 @@ namespace WebApi
             {
                 app.UseHsts();
             }
+
+            app.UseSwagger();
+            app.UseSwaggerUI(opt =>
+            {
+                opt.SwaggerEndpoint("/swagger/v1/swagger.json", "CompanyEmployeesApi v1");
+                opt.SwaggerEndpoint("/swagger/v2/swagger.json", "CompanyEmployeesApi v2");
+            });
 
             app.UseHttpsRedirection();
 

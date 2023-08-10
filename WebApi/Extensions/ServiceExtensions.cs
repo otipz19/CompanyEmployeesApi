@@ -12,6 +12,8 @@ using Microsoft.AspNetCore.Mvc.Versioning;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
+using Microsoft.OpenApi.Models;
+using Presentation;
 using Presentation.ActionFilters;
 using Repository;
 using Service;
@@ -121,7 +123,7 @@ namespace WebApi.Extensions
                     var jsonFormatter = config.OutputFormatters.OfType<SystemTextJsonOutputFormatter>().FirstOrDefault();
                     if (jsonFormatter is not null)
                     {
-                        foreach(var mediaType in mediaTypes)
+                        foreach (var mediaType in mediaTypes)
                         {
                             jsonFormatter.SupportedMediaTypes.Add(mediaType + "+json");
                         }
@@ -133,7 +135,7 @@ namespace WebApi.Extensions
                     var xmlFormatter = config.OutputFormatters.OfType<XmlDataContractSerializerOutputFormatter>().FirstOrDefault();
                     if (xmlFormatter is not null)
                     {
-                        foreach(var mediaType in mediaTypes)
+                        foreach (var mediaType in mediaTypes)
                         {
                             xmlFormatter.SupportedMediaTypes.Add(mediaType + "+xml");
                         }
@@ -212,7 +214,7 @@ namespace WebApi.Extensions
         public static IServiceCollection ConfigureJwt(this IServiceCollection services, IConfiguration configuration)
         {
             var jwtSettings = new JwtSettings();
-            configuration.GetSection("JwtSettings").Bind(jwtSettings);
+            configuration.GetSection(JwtSettings.Section).Bind(jwtSettings);
 
             services.AddAuthentication(opt =>
             {
@@ -226,6 +228,44 @@ namespace WebApi.Extensions
             });
 
             return services;
+        }
+
+        public static IServiceCollection ConfigureSwagger(this IServiceCollection services)
+        {
+            return services.AddSwaggerGen(opt =>
+            {
+                opt.SwaggerDoc("v1", new OpenApiInfo() { Title = "CompanyEmployeesApi", Version = "v1" });
+                opt.SwaggerDoc("v2", new OpenApiInfo() { Title = "CompanyEmployeesApi", Version = "v2" });
+
+                opt.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme()
+                {
+                    In = ParameterLocation.Header,
+                    Description = "Add JWT with Bearer",
+                    Name = "Authorization",
+                    Type = SecuritySchemeType.ApiKey,
+                    Scheme = "Bearer",
+                });
+
+                opt.AddSecurityRequirement(new OpenApiSecurityRequirement()
+                {
+                    {
+                        new OpenApiSecurityScheme()
+                        {
+                            Reference = new OpenApiReference()
+                            {
+                                Id = "Bearer",
+                                Type = ReferenceType.SecurityScheme,
+                            },
+                            Name = "Bearer",
+                        },
+                        new List<string>()
+                    }
+                });
+
+                var xmlFileName = $"{typeof(AssemblyReference).Assembly.GetName().Name}.xml";
+                var xmlFilePath = Path.Combine(AppContext.BaseDirectory, xmlFileName);
+                opt.IncludeXmlComments(xmlFilePath);
+            });
         }
 
         private static IServiceCollection AddDataShaper(this IServiceCollection services)

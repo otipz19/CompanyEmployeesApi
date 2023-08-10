@@ -2,6 +2,8 @@
 {
     public class JwtSettings
     {
+        public const string Section = "JwtSettings";
+
         public string ValidIssuer { get; set; } = default!;
 
         public string ValidAudience { get; set; } = default!;

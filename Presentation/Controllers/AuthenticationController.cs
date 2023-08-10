@@ -48,7 +48,7 @@ namespace Presentation.Controllers
                 return Unauthorized();
             }
 
-            TokensDto tokens = await _serviceManager.AuthenticationService.CreateToken(result.user!);
+            TokensDto tokens = await _serviceManager.AuthenticationService.CreateTokens(result.user!);
             return Ok(tokens);
         }
     }

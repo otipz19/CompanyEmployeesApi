@@ -1,0 +1,16 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>Presentation</name>
+    </assembly>
+    <members>
+        <member name="M:Presentation.Controllers.CompaniesController.GetCompanies(Shared.DTO.RequestFeatures.CompanyRequestParameters)">
+            <summary>
+            Gets list of companies
+            </summary>
+            <returns>List of companies</returns>
+            <response code="200">Returns list of companies</response>
+            <response code="401">If client unauthorized</response>
+        </member>
+    </members>
+</doc>

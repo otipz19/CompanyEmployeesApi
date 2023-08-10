@@ -1,6 +1,7 @@
 ﻿using Entities.LinkModels;
 using Marvin.Cache.Headers;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
 using Presentation.ActionFilters;
@@ -15,6 +16,7 @@ namespace Presentation.Controllers
     [ApiVersion("1.0")]
     [ApiController]
     [Route("api/companies")]
+    [ApiExplorerSettings(GroupName = "v1")]
     public class CompaniesController : ControllerBase
     {
         private readonly IServiceManager _services;
@@ -24,10 +26,18 @@ namespace Presentation.Controllers
             _services = services;
         }
 
+        /// <summary>
+        /// Gets list of companies
+        /// </summary>
+        /// <returns>List of companies</returns>
+        /// <response code="200">Returns list of companies</response>
+        /// <response code="401">If client unauthorized</response>
         [HttpGet]
         [HttpHead]
         [ValidateMediaType]
         [Authorize]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType((StatusCodes.Status401Unauthorized))]
         public async Task<ActionResult> GetCompanies([FromQuery]CompanyRequestParameters requestParameters)
         {
             var companies = await _services.CompanyService
@@ -54,7 +64,7 @@ namespace Presentation.Controllers
 
         [HttpGet("{id:guid}")]
         [HttpHead("{id:guid}")]
-        [HttpCacheValidation(MustRevalidate = false)]
+        [HttpCacheValidation(MustRevalidate = true)]
         [HttpCacheExpiration(MaxAge = 600)]
         public async Task<ActionResult> GetCompany(Guid id)
         {

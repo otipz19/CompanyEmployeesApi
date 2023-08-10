@@ -50,6 +50,7 @@ namespace Service
                 {
                     if (!await _roleManager.RoleExistsAsync(role))
                     {
+                        await _userManager.DeleteAsync(user);
                         throw new RoleDoesNotExistsException(role);
                     }
                 }
@@ -74,7 +75,7 @@ namespace Service
             return (result, user);
         }
 
-        public async Task<TokensDto> CreateToken(User user)
+        public async Task<TokensDto> CreateTokens(User user)
         {
             string accessToken = await CreateAccessToken(user);
 

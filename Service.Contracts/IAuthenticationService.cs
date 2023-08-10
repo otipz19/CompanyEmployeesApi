@@ -10,7 +10,7 @@ namespace Service.Contracts
 
         Task<(bool isSuccess, User? user)> AuthenticateUser(AuthenticateUserDto dto);
 
-        Task<TokensDto> CreateToken(User user);
+        Task<TokensDto> CreateTokens(User user);
 
         Task<TokensDto> RefreshToken(TokensDto tokens);
     }
