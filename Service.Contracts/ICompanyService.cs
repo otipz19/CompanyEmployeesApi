@@ -4,6 +4,7 @@ using Shared.DTO.Company;
 using Shared.DTO.RequestFeatures;
 using Shared.DTO.RequestFeatures.Paging;
 using Entities.LinkModels;
+using Entities.Responses.Abstractions;
 
 namespace Service.Contracts
 {
@@ -14,7 +15,7 @@ namespace Service.Contracts
         public Task<(LinkResponse response, PagingMetaData metaData)> GetCompaniesByIds(IEnumerable<Guid>? ids,
            LinkCompaniesParameters linkParameters);
 
-        public Task<GetCompanyDto> GetCompany(Guid id);
+        public Task<BaseApiResponse> GetCompany(Guid id);
 
         public Task<GetCompanyDto> CreateCompany(CreateCompanyDto dto);
 

@@ -1,4 +1,5 @@
 ﻿using Entities.LinkModels;
+using Entities.Responses.Abstractions;
 using Marvin.Cache.Headers;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
@@ -17,7 +18,7 @@ namespace Presentation.Controllers
     [ApiController]
     [Route("api/companies")]
     [ApiExplorerSettings(GroupName = "v1")]
-    public class CompaniesController : ControllerBase
+    public class CompaniesController : BaseApiController
     {
         private readonly IServiceManager _services;
 
@@ -68,7 +69,14 @@ namespace Presentation.Controllers
         [HttpCacheExpiration(MaxAge = 600)]
         public async Task<ActionResult> GetCompany(Guid id)
         {
-            GetCompanyDto company = await _services.CompanyService.GetCompany(id);
+            BaseApiResponse response = await _services.CompanyService.GetCompany(id);
+
+            if (response is ErrorApiResponse error)
+            {
+                return ProcessError(error);
+            }
+
+            var company = ((OkApiResponse)response).Result;
             return Ok(company);
         }
 

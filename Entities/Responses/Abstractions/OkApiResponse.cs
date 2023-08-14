@@ -1,12 +1,12 @@
 ﻿namespace Entities.Responses.Abstractions
 {
-    public class OkApiResponse<TResult> : BaseApiResponse
+    public class OkApiResponse : BaseApiResponse
     {
-        public OkApiResponse(TResult result) : base(true)
+        public OkApiResponse(object result) : base(true)
         {
             Result = result;
         }
 
-        public TResult Result { get; init; }
+        public object Result { get; init; }
     }
 }

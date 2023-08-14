@@ -10,6 +10,8 @@ using Service.Contracts.DataShaping;
 using Entities.DataShaping;
 using Entities.LinkModels;
 using Contracts.Hateoas;
+using Entities.Responses.Abstractions;
+using Entities.Responses.Company;
 
 namespace Service
 {
@@ -93,12 +95,17 @@ namespace Service
             return GetCompanies(pagedCompanies, linkParameters);
         }
 
-        public async Task<GetCompanyDto> GetCompany(Guid id)
+        public async Task<BaseApiResponse> GetCompany(Guid id)
         {
-            Company company = await GetCompanyIfExists(id);
+            Company? company = await _repositories.Companies.GetCompany(id, asNoTracking: false);
 
-            var companieDto = _mapper.Map<GetCompanyDto>(company);
-            return companieDto;
+            if (company is null)
+            {
+                return new CompanyNotFound(id);
+            }
+
+            GetCompanyDto companieDto = _mapper.Map<GetCompanyDto>(company);
+            return new OkApiResponse(companieDto);
         }
 
         public async Task<(UpdateCompanyDto dto, Company entity)> GetCompanyForPatch(Guid id)
