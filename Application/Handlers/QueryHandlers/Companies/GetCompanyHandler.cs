@@ -1,4 +1,4 @@
-﻿using Application.Queries.Company;
+﻿using Application.Queries.Companies;
 using AutoMapper;
 using Entities.Models;
 using MediatR;

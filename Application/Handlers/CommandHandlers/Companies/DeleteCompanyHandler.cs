@@ -6,7 +6,7 @@ using Service.Contracts.GetHelpers;
 
 namespace Application.Handlers.CommandHandlers.Companies
 {
-    public class DeleteCompanyHandler : IRequestHandler<DeleteCompanyCommand>
+    internal sealed class DeleteCompanyHandler : IRequestHandler<DeleteCompanyCommand>
     {
         private readonly IRepositoryManager _repositories;
         private readonly IGetCompanyHelper _getHelper;

@@ -1,4 +1,4 @@
-﻿using Application.Queries.Company;
+﻿using Application.Queries.Companies;
 using Contracts.Repository;
 using Entities.LinkModels;
 using Entities.Models;

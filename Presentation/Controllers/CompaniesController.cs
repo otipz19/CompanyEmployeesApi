@@ -1,12 +1,15 @@
-﻿using Entities.LinkModels;
+﻿using Application.Commands.Companies;
+using Application.Commands.Company;
+using Application.Queries.Companies;
+using Entities.LinkModels;
 using Marvin.Cache.Headers;
+using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
 using Presentation.ActionFilters;
 using Presentation.ModelBinders;
-using Service.Contracts;
 using Shared.DTO.Company;
 using Shared.DTO.RequestFeatures;
 using System.Text.Json;
@@ -19,11 +22,11 @@ namespace Presentation.Controllers
     [ApiExplorerSettings(GroupName = "v1")]
     public class CompaniesController : ControllerBase
     {
-        private readonly IServiceManager _services;
+        private readonly ISender _sender;
 
-        public CompaniesController(IServiceManager services)
+        public CompaniesController(ISender sender)
         {
-            _services = services;
+            _sender = sender;
         }
 
         /// <summary>
@@ -40,8 +43,8 @@ namespace Presentation.Controllers
         [ProducesResponseType((StatusCodes.Status401Unauthorized))]
         public async Task<ActionResult> GetCompanies([FromQuery]CompanyRequestParameters requestParameters)
         {
-            var companies = await _services.CompanyService
-                .GetCompanies(new LinkCompaniesParameters(requestParameters, HttpContext));
+            var query = new GetCompaniesQuery(new LinkCompaniesParameters(requestParameters, HttpContext));
+            var companies = await _sender.Send(query);
 
             Response.Headers.Add("X-Pagination", JsonSerializer.Serialize(companies.metaData));
 
@@ -54,8 +57,8 @@ namespace Presentation.Controllers
         public async Task<ActionResult> GetCompaniesByIds([FromQuery]CompanyRequestParameters requestParameters,
             [FromBody][ModelBinder(BinderType = typeof(ArrayModelBinder))]IEnumerable<Guid> ids)
         {
-            var companies = await _services.CompanyService
-                .GetCompaniesByIds(ids, new LinkCompaniesParameters(requestParameters, HttpContext));
+            var query = new GetCompaniesByIdsQuery(ids, new LinkCompaniesParameters(requestParameters, HttpContext));
+            var companies = await _sender.Send(query);
 
             Response.Headers.Add("X-Pagination", JsonSerializer.Serialize(companies.metaData));
 
@@ -68,7 +71,8 @@ namespace Presentation.Controllers
         [HttpCacheExpiration(MaxAge = 600)]
         public async Task<ActionResult> GetCompany(Guid id)
         {
-            GetCompanyDto company = await _services.CompanyService.GetCompany(id);
+            var query = new GetCompanyQuery(id);
+            GetCompanyDto company = await _sender.Send(query);
             return Ok(company);
         }
 
@@ -76,7 +80,8 @@ namespace Presentation.Controllers
         [ValidateArguments]
         public async Task<ActionResult> CreateCompany(CreateCompanyDto createDto)
         {
-            GetCompanyDto result = await _services.CompanyService.CreateCompany(createDto);
+            var command = new CreateCompanyCommand(createDto);
+            GetCompanyDto result = await _sender.Send(command);
             return CreatedAtAction(nameof(GetCompany), new { id = result.Id }, result);
         }
 
@@ -84,7 +89,8 @@ namespace Presentation.Controllers
         [ValidateArguments]
         public async Task<ActionResult> CreateCompanies(IEnumerable<CreateCompanyDto> createDtos)
         {
-            IEnumerable<GetCompanyDto> result = await _services.CompanyService.CreateCompaniesCollection(createDtos);
+            var command = new CreateCompaniesCollectionCommand(createDtos);
+            IEnumerable<GetCompanyDto> result = await _sender.Send(command);
             string ids = string.Join(',', result.Select(c => c.Id.ToString()));
             return CreatedAtAction(nameof(GetCompaniesByIds), new { ids = ids }, result);
         }
@@ -93,14 +99,16 @@ namespace Presentation.Controllers
         [ValidateArguments]
         public async Task<ActionResult> UpdateCompany(Guid id, UpdateCompanyDto updateDto)
         {
-            await _services.CompanyService.UpdateCompany(id, updateDto);
+            var command = new UpdateCompanyCommand(id, updateDto);
+            await _sender.Send(command);
             return NoContent();
         }
 
         [HttpDelete("{id:guid}")]
         public async Task<ActionResult> DeleteCompany(Guid id)
         {
-            await _services.CompanyService.DeleteCompany(id);
+            var command = new DeleteCompanyCommand(id);
+            await _sender.Send(command);
             return NoContent();
         }
 
@@ -112,7 +120,8 @@ namespace Presentation.Controllers
                 return BadRequest();
             }
 
-            var toPatch = await _services.CompanyService.GetCompanyForPatch(id);
+            var getQuery = new GetCompanyForPatchQuery(id);
+            var toPatch = await _sender.Send(getQuery);
 
             patchDoc.ApplyTo(toPatch.dto, ModelState);
             if (!ModelState.IsValid)
@@ -120,7 +129,8 @@ namespace Presentation.Controllers
                 return UnprocessableEntity(ModelState);
             }
 
-            await _services.CompanyService.SaveChangesForPatch(toPatch.dto, toPatch.entity);
+            var saveCommand = new SaveChangesForPatchCommand(toPatch.dto, toPatch.entity);
+            await _sender.Send(saveCommand);
             return NoContent();
         }
 
