@@ -1,9 +1,7 @@
-﻿using Entities.Models;
-using Entities.DataShaping;
+﻿using Entities.LinkModels;
+using Entities.Models;
 using Shared.DTO.Company;
-using Shared.DTO.RequestFeatures;
 using Shared.DTO.RequestFeatures.Paging;
-using Entities.LinkModels;
 
 namespace Service.Contracts
 {

@@ -47,6 +47,11 @@ namespace WebApi
 
             builder.Services.ConfigureSwagger();
 
+            builder.Services.AddMediatR(config =>
+            {
+                config.RegisterServicesFromAssembly(typeof(Application.IAssemblyReference).Assembly);
+            });
+
             var app = builder.Build();
 
             // Configure the HTTP request pipeline.

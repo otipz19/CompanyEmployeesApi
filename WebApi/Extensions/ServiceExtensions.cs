@@ -19,7 +19,9 @@ using Repository;
 using Service;
 using Service.Contracts;
 using Service.Contracts.DataShaping;
+using Service.Contracts.GetHelpers;
 using Service.DataShaping;
+using Service.GetHelpers;
 using Service.Parameters;
 using Shared.DTO.Company;
 using Shared.DTO.Employee;
@@ -70,7 +72,9 @@ namespace WebApi.Extensions
                 .AddSingleton<ILoggerManager, LoggerManager>()
                 .AddDataShaper()
                 .AddScoped<IEmployeeLinksGenerator, EmployeeLinksGenerator>()
-                .AddScoped<ICompanyLinksGenerator, CompanyLinksGenerator>();
+                .AddScoped<ICompanyLinksGenerator, CompanyLinksGenerator>()
+                .AddScoped<IGetCompanyHelper, GetCompanyHelper>()
+                .AddScoped<IGetEmployeeHelper, GetEmployeeHelper>();
         }
 
         public static IMvcBuilder AddControllersWithFormatters(this IServiceCollection services)
