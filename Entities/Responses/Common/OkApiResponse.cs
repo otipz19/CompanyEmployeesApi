@@ -1,4 +1,6 @@
-﻿namespace Entities.Responses.Abstractions
+﻿using Entities.Responses.Abstractions;
+
+namespace Entities.Responses.Common
 {
     public class OkApiResponse : BaseApiResponse
     {

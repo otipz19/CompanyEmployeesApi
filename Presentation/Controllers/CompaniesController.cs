@@ -1,5 +1,6 @@
 ﻿using Entities.LinkModels;
 using Entities.Responses.Abstractions;
+using Entities.Responses.Common;
 using Marvin.Cache.Headers;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
@@ -84,7 +85,14 @@ namespace Presentation.Controllers
         [ValidateArguments]
         public async Task<ActionResult> CreateCompany(CreateCompanyDto createDto)
         {
-            GetCompanyDto result = await _services.CompanyService.CreateCompany(createDto);
+            BaseApiResponse response = await _services.CompanyService.CreateCompany(createDto);
+
+            if(response is  ErrorApiResponse error)
+            {
+                return ProcessError(error);
+            }
+
+            var result = (GetCompanyDto)((OkApiResponse)response).Result;
             return CreatedAtAction(nameof(GetCompany), new { id = result.Id }, result);
         }
 
@@ -101,14 +109,26 @@ namespace Presentation.Controllers
         [ValidateArguments]
         public async Task<ActionResult> UpdateCompany(Guid id, UpdateCompanyDto updateDto)
         {
-            await _services.CompanyService.UpdateCompany(id, updateDto);
+            BaseApiResponse response = await _services.CompanyService.UpdateCompany(id, updateDto);
+
+            if(response is ErrorApiResponse error)
+            {
+                return ProcessError(error);
+            }
+
             return NoContent();
         }
 
         [HttpDelete("{id:guid}")]
         public async Task<ActionResult> DeleteCompany(Guid id)
         {
-            await _services.CompanyService.DeleteCompany(id);
+            BaseApiResponse response = await _services.CompanyService.DeleteCompany(id);
+
+            if(response is ErrorApiResponse error)
+            {
+                return ProcessError(error);
+            }
+
             return NoContent();
         }
 

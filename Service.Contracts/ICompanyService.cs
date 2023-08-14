@@ -17,13 +17,13 @@ namespace Service.Contracts
 
         public Task<BaseApiResponse> GetCompany(Guid id);
 
-        public Task<GetCompanyDto> CreateCompany(CreateCompanyDto dto);
+        public Task<BaseApiResponse> CreateCompany(CreateCompanyDto dto);
 
         public Task<IEnumerable<GetCompanyDto>> CreateCompaniesCollection(IEnumerable<CreateCompanyDto> dtos);
 
-        public Task UpdateCompany(Guid id, UpdateCompanyDto dto);
+        public Task<BaseApiResponse> UpdateCompany(Guid id, UpdateCompanyDto dto);
 
-        public Task DeleteCompany(Guid id);
+        public Task<BaseApiResponse> DeleteCompany(Guid id);
 
         public Task<(UpdateCompanyDto dto, Company entity)> GetCompanyForPatch(Guid id);
 

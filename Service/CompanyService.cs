@@ -12,6 +12,7 @@ using Entities.LinkModels;
 using Contracts.Hateoas;
 using Entities.Responses.Abstractions;
 using Entities.Responses.Company;
+using Entities.Responses.Common;
 
 namespace Service
 {
@@ -29,14 +30,14 @@ namespace Service
             _linksGenerator = linksGenerator;
         }
 
-        public async Task<GetCompanyDto> CreateCompany(CreateCompanyDto dto)
+        public async Task<BaseApiResponse> CreateCompany(CreateCompanyDto dto)
         {
             Company company = _mapper.Map<Company>(dto);
 
             _repositories.Companies.CreateCompany(company);
             await _repositories.SaveChangesAsync();
 
-            return _mapper.Map<GetCompanyDto>(company);
+            return new OkApiResponse(_mapper.Map<GetCompanyDto>(company));
         }
 
         public async Task<IEnumerable<GetCompanyDto>> CreateCompaniesCollection(IEnumerable<CreateCompanyDto> dtos)
@@ -55,21 +56,34 @@ namespace Service
             return _mapper.Map<IEnumerable<GetCompanyDto>>(companies);
         }
 
-        public async Task UpdateCompany(Guid id, UpdateCompanyDto dto)
+        public async Task<BaseApiResponse> UpdateCompany(Guid id, UpdateCompanyDto dto)
         {
-            Company company = await GetCompanyIfExists(id);
+            Company? company = await _repositories.Companies.GetCompany(id, asNoTracking: false);
+
+            if (company is null)
+            {
+                return new CompanyNotFound(id);
+            }
 
             _mapper.Map(dto, company);
-
             await _repositories.SaveChangesAsync();
+
+            return new NoContentApiResponse();
         }
 
-        public async Task DeleteCompany(Guid id)
+        public async Task<BaseApiResponse> DeleteCompany(Guid id)
         {
-            Company company = await GetCompanyIfExists(id);
+            Company? company = await _repositories.Companies.GetCompany(id, asNoTracking: false);
+
+            if (company is null)
+            {
+                return new CompanyNotFound(id);
+            }
 
             _repositories.Companies.DeleteCompany(company);
             await _repositories.SaveChangesAsync();
+
+            return new NoContentApiResponse();
         }
 
         public async Task<(LinkResponse response, PagingMetaData metaData)> GetCompanies(LinkCompaniesParameters linkParameters)
