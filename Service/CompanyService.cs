@@ -40,7 +40,7 @@ namespace Service
         public async Task<IEnumerable<GetCompanyDto>> CreateCompaniesCollection(IEnumerable<CreateCompanyDto> dtos)
         {
             if (dtos is null)
-                throw new CompaniesCollectionBadRequest();
+                throw new CompaniesCollectionBadRequestException();
 
             IEnumerable<Company> companies = _mapper.Map<IEnumerable<Company>>(dtos);
 
