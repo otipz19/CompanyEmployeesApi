@@ -6,14 +6,14 @@ using Service.Contracts.GetHelpers;
 
 namespace Application.Handlers.CommandHandlers.Employees
 {
-    internal sealed class DeleteEmployeeOfCompanyHandler
-        : IRequestHandler<DeleteEmployeeOfCompanyCommand>
+    internal sealed class DeleteEmployeeHandler
+        : IRequestHandler<DeleteEmployeeCommand>
     {
         private readonly IGetEmployeeHelper _getEmployeeHelper;
         private readonly IGetCompanyHelper _getCompanyHelper;
         private readonly IRepositoryManager _repositories;
 
-        public DeleteEmployeeOfCompanyHandler(
+        public DeleteEmployeeHandler(
             IGetEmployeeHelper getEmployeeHelper,
             IGetCompanyHelper getCompanyHelper,
             IRepositoryManager repositories)
@@ -23,7 +23,7 @@ namespace Application.Handlers.CommandHandlers.Employees
             _repositories = repositories;
         }
 
-        public async Task Handle(DeleteEmployeeOfCompanyCommand request, CancellationToken cancellationToken)
+        public async Task Handle(DeleteEmployeeCommand request, CancellationToken cancellationToken)
         {
             await _getCompanyHelper.GetCompanyIfExistsAsNoTracking(request.CompanyId);
             Employee entity = await _getEmployeeHelper.GetEmployeeIfExists(request.CompanyId, request.EmployeeId);

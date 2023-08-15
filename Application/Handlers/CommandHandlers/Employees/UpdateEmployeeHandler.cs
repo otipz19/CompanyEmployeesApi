@@ -7,15 +7,15 @@ using Service.Contracts.GetHelpers;
 
 namespace Application.Handlers.CommandHandlers.Employees
 {
-    internal sealed class UpdateEmployeeOfCompanyHandler
-        : IRequestHandler<UpdateEmployeeOfCompanyCommand>
+    internal sealed class UpdateEmployeeHandler
+        : IRequestHandler<UpdateEmployeeCommand>
     {
         private readonly IRepositoryManager _repositories;
         private readonly IGetCompanyHelper _getCompanyHelper;
         private readonly IGetEmployeeHelper _getEmployeeHelper;
         private readonly IMapper _mapper;
 
-        public UpdateEmployeeOfCompanyHandler(
+        public UpdateEmployeeHandler(
             IRepositoryManager repositories,
             IGetCompanyHelper getCompanyHelper,
             IGetEmployeeHelper getEmployeeHelper,
@@ -27,7 +27,7 @@ namespace Application.Handlers.CommandHandlers.Employees
             _mapper = mapper;
         }
 
-        public async Task Handle(UpdateEmployeeOfCompanyCommand request, CancellationToken cancellationToken)
+        public async Task Handle(UpdateEmployeeCommand request, CancellationToken cancellationToken)
         {
             await _getCompanyHelper.GetCompanyIfExistsAsNoTracking(request.CompanyId);
 

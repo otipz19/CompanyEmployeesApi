@@ -1,11 +1,13 @@
-﻿using Microsoft.AspNetCore.JsonPatch;
-using Microsoft.AspNetCore.Mvc;
-using Service.Contracts;
-using Shared.DTO.Employee;
-using Presentation.ActionFilters;
-using System.Text.Json;
-using Shared.DTO.RequestFeatures;
+﻿using Application.Commands.Employees;
+using Application.Queries.Employees;
 using Entities.LinkModels;
+using MediatR;
+using Microsoft.AspNetCore.JsonPatch;
+using Microsoft.AspNetCore.Mvc;
+using Presentation.ActionFilters;
+using Shared.DTO.Employee;
+using Shared.DTO.RequestFeatures;
+using System.Text.Json;
 
 namespace Presentation.Controllers
 {
@@ -14,11 +16,11 @@ namespace Presentation.Controllers
     [Route("api/companies/{companyId}/employees")]
     public class EmployeesController : ControllerBase
     {
-        private readonly IServiceManager _services;
+        private readonly ISender _sender;
 
-        public EmployeesController(IServiceManager services)
+        public EmployeesController(ISender sender)
         {
-            _services = services;
+            _sender = sender;
         }
 
         [HttpGet]
@@ -27,8 +29,8 @@ namespace Presentation.Controllers
         public async Task<ActionResult> GetEmployeesOfCompany(Guid companyId,
             [FromQuery] EmployeeRequestParameters requestParameters)
         {
-            var result = await _services.EmployeeService
-                .GetEmployeesOfCompany(companyId, new LinkEmployeesParameters(requestParameters, HttpContext));
+            var query = new GetEmployeesQuery(companyId, new LinkEmployeesParameters(requestParameters, HttpContext));
+            var result = await _sender.Send(query);
 
             Response.Headers.Add("X-Pagination", JsonSerializer.Serialize(result.metaData));
 
@@ -39,7 +41,8 @@ namespace Presentation.Controllers
         [HttpHead("{id:guid}")]
         public async Task<ActionResult> GetEmployeeOfCompany(Guid companyId, Guid id)
         {
-            GetEmployeeDto employee = await _services.EmployeeService.GetEmployeeOfCompany(companyId, id);
+            var query = new GetEmployeeQuery(companyId, id);
+            GetEmployeeDto employee = await _sender.Send(query);
             return Ok(employee);
         }
 
@@ -47,7 +50,8 @@ namespace Presentation.Controllers
         [ValidateArguments]
         public async Task<ActionResult> CreateEmployee(Guid companyId, CreateEmployeeDto createDto)
         {
-            GetEmployeeDto result = await _services.EmployeeService.CreateEmployeeOfCompany(createDto, companyId);
+            var command = new CreateEmployeeCommand(companyId, createDto);
+            GetEmployeeDto result = await _sender.Send(command);
             return CreatedAtAction(nameof(GetEmployeeOfCompany), new { companyId = companyId, id = result.Id }, result);
         }
 
@@ -55,14 +59,16 @@ namespace Presentation.Controllers
         [ValidateArguments]
         public async Task<ActionResult> UpdateEmployee(Guid companyId, Guid id, UpdateEmployeeDto updateDto)
         {
-            await _services.EmployeeService.UpdateEmployeeOfCompany(companyId, id, updateDto);
+            var command = new UpdateEmployeeCommand(companyId, id, updateDto);
+            await _sender.Send(command);
             return NoContent();
         }
 
         [HttpDelete("{id:guid}")]
         public async Task<ActionResult> DeleteEmployee(Guid companyId, Guid id)
         {
-            await _services.EmployeeService.DeleteEmployeeOfCompany(companyId, id);
+            var command = new DeleteEmployeeCommand(companyId, id);
+            await _sender.Send(command);
             return NoContent();
         }
 
@@ -75,7 +81,8 @@ namespace Presentation.Controllers
                 return BadRequest();
             }
 
-            var toPatch = await _services.EmployeeService.GetEmployeeForPatch(companyId, id);
+            var getQuery = new GetEmployeeForPatchQuery(companyId, id);
+            var toPatch = await _sender.Send(getQuery);
 
             patchDoc.ApplyTo(toPatch.dto, ModelState);
             TryValidateModel(toPatch.dto);
@@ -84,7 +91,8 @@ namespace Presentation.Controllers
                 return UnprocessableEntity(ModelState);
             }
 
-            await _services.EmployeeService.SaveChangesForPatch(toPatch.dto, toPatch.entity);
+            var saveCommand = new SaveChangesForPatchCommand(toPatch.dto, toPatch.entity);
+            await _sender.Send(saveCommand);
             return NoContent();
         }
 

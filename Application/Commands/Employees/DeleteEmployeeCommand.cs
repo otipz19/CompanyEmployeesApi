@@ -2,7 +2,7 @@
 
 namespace Application.Commands.Employees
 {
-    public sealed record DeleteEmployeeOfCompanyCommand(Guid CompanyId, Guid EmployeeId)
+    public sealed record DeleteEmployeeCommand(Guid CompanyId, Guid EmployeeId)
         : IRequest
     {
     }

@@ -3,7 +3,7 @@ using Shared.DTO.Employee;
 
 namespace Application.Queries.Employees
 {
-    public sealed record GetEmployeeOfCompanyQuery(Guid CompanyId, Guid EmployeeId)
+    public sealed record GetEmployeeQuery(Guid CompanyId, Guid EmployeeId)
         : IRequest<GetEmployeeDto>
     {
     }

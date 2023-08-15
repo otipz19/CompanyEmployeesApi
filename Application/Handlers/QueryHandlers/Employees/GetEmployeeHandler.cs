@@ -7,14 +7,14 @@ using Shared.DTO.Employee;
 
 namespace Application.Handlers.QueryHandlers.Employees
 {
-    internal sealed class GetEmployeeOfCompanyHandler
-        : IRequestHandler<GetEmployeeOfCompanyQuery, GetEmployeeDto>
+    internal sealed class GetEmployeeHandler
+        : IRequestHandler<GetEmployeeQuery, GetEmployeeDto>
     {
         private readonly IGetCompanyHelper _getCompanyHelper;
         private readonly IGetEmployeeHelper _getEmployeeHelper;
         private readonly IMapper _mapper;
 
-        public GetEmployeeOfCompanyHandler(
+        public GetEmployeeHandler(
             IGetCompanyHelper getCompanyHelper,
             IGetEmployeeHelper getEmployeeHelper,
             IMapper mapper)
@@ -24,7 +24,7 @@ namespace Application.Handlers.QueryHandlers.Employees
             _mapper = mapper;
         }
 
-        public async Task<GetEmployeeDto> Handle(GetEmployeeOfCompanyQuery request, CancellationToken cancellationToken)
+        public async Task<GetEmployeeDto> Handle(GetEmployeeQuery request, CancellationToken cancellationToken)
         {
             await _getCompanyHelper.GetCompanyIfExistsAsNoTracking(request.CompanyId);
 

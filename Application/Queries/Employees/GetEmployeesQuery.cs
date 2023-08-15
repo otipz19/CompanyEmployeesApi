@@ -5,7 +5,7 @@ using Shared.DTO.RequestFeatures.Paging;
 
 namespace Application.Queries.Employees
 {
-    public sealed record GetEmployeesOfCompanyQuery(Guid CompanyId, LinkEmployeesParameters LinkRequestParameters)
+    public sealed record GetEmployeesQuery(Guid CompanyId, LinkEmployeesParameters LinkRequestParameters)
         : IRequest<(LinkResponse response, PagingMetaData metaData)>
     {
     }

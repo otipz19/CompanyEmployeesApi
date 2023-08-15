@@ -14,8 +14,8 @@ using Shared.DTO.RequestFeatures.Paging;
 
 namespace Application.Handlers.QueryHandlers.Employees
 {
-    internal sealed class GetEmployeesOfCompanyHandler
-        : IRequestHandler<GetEmployeesOfCompanyQuery, (LinkResponse response, PagingMetaData metaData)>
+    internal sealed class GetEmployeesHandler
+        : IRequestHandler<GetEmployeesQuery, (LinkResponse response, PagingMetaData metaData)>
     {
         private readonly IGetCompanyHelper _getCompanyHelper;
         private readonly IRepositoryManager _repositories;
@@ -23,7 +23,7 @@ namespace Application.Handlers.QueryHandlers.Employees
         private readonly IDataShaper _dataShaper;
         private readonly IMapper _mapper;
 
-        public GetEmployeesOfCompanyHandler(
+        public GetEmployeesHandler(
             IGetCompanyHelper getHelper,
             IRepositoryManager repositories,
             IEmployeeLinksGenerator linksGenerator,
@@ -38,7 +38,7 @@ namespace Application.Handlers.QueryHandlers.Employees
         }
 
         public async Task<(LinkResponse response, PagingMetaData metaData)> Handle(
-            GetEmployeesOfCompanyQuery request,
+            GetEmployeesQuery request,
             CancellationToken cancellationToken)
         {
             if (!request.LinkRequestParameters.RequestParameters.IsValidAgeRange)
