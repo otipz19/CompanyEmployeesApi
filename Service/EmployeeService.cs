@@ -1,15 +1,14 @@
 ﻿using AutoMapper;
-using Service.Contracts.DataShaping;
-using Entities.DataShaping;
+using Contracts.Hateoas;
 using Contracts.Repository;
+using Entities.DataShaping;
 using Entities.Exceptions;
+using Entities.LinkModels;
 using Entities.Models;
 using Service.Contracts;
+using Service.Contracts.DataShaping;
 using Shared.DTO.Employee;
-using Shared.DTO.RequestFeatures;
 using Shared.DTO.RequestFeatures.Paging;
-using Entities.LinkModels;
-using Contracts.Hateoas;
 
 namespace Service
 {
