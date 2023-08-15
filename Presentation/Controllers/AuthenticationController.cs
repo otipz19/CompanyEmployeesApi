@@ -1,8 +1,10 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Application.Commands.Authentication;
+using Application.Queries.Authentication;
+using MediatR;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Presentation.ActionFilters;
-using Service.Contracts;
 using Shared.DTO.Authentication;
 
 namespace Presentation.Controllers
@@ -11,18 +13,19 @@ namespace Presentation.Controllers
     [Route("api/authentication")]
     public class AuthenticationController : ControllerBase
     {
-        private readonly IServiceManager _serviceManager;
+        private readonly ISender _sender;
 
-        public AuthenticationController(IServiceManager serviceManager)
+        public AuthenticationController(ISender sender)
         {
-            _serviceManager = serviceManager;
+            _sender = sender;
         }
 
         [HttpPost]
         [ValidateArguments]
         public async Task<ActionResult> RegisterUser(RegisterUserDto dto)
         {
-            IdentityResult result = await _serviceManager.AuthenticationService.RegisterUser(dto);
+            var command = new RegisterUserCommand(dto);
+            IdentityResult result = await _sender.Send(command);
 
             if (!result.Succeeded)
             {
@@ -41,14 +44,16 @@ namespace Presentation.Controllers
         [ValidateArguments]
         public async Task<ActionResult> AuthenticateUser(AuthenticateUserDto dto)
         {
-            var result = await _serviceManager.AuthenticationService.AuthenticateUser(dto);
+            var query = new AuthenticateUserQuery(dto);
+            var result = await _sender.Send(query);
 
             if (!result.isSuccess)
             {
                 return Unauthorized();
             }
 
-            TokensDto tokens = await _serviceManager.AuthenticationService.CreateTokens(result.user!);
+            var command = new CreateTokensCommand(result.user);
+            TokensDto tokens = await _sender.Send(command);
             return Ok(tokens);
         }
     }

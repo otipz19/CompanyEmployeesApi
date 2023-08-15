@@ -1,4 +1,6 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Application.Queries.Authentication;
+using MediatR;
+using Microsoft.AspNetCore.Mvc;
 using Presentation.ActionFilters;
 using Service.Contracts;
 using Shared.DTO.Authentication;
@@ -9,18 +11,19 @@ namespace Presentation.Controllers
     [ApiController]
     public class TokenController : ControllerBase
     {
-        private readonly IServiceManager _serviceManager;
+        private readonly ISender _sender;
 
-        public TokenController(IServiceManager serviceManager)
+        public TokenController(ISender sender)
         {
-            _serviceManager = serviceManager;
+            _sender = sender;
         }
 
         [HttpPost]
         [ValidateArguments]
         public async Task<ActionResult> RefreshToken(TokensDto dto)
         {
-            TokensDto refreshedTokens = await _serviceManager.AuthenticationService.RefreshToken(dto);
+            var query = new RefreshTokenQuery(dto);
+            TokensDto refreshedTokens = await _sender.Send(query);
 
             return Ok(refreshedTokens);
         }
