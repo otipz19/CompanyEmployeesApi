@@ -1,4 +1,5 @@
-﻿using AspNetCoreRateLimit;
+﻿using Application.JwtParameters;
+using AspNetCoreRateLimit;
 using Contracts.Hateoas;
 using Contracts.LoggerService;
 using Contracts.Repository;
@@ -11,22 +12,17 @@ using Microsoft.AspNetCore.Mvc.Formatters;
 using Microsoft.AspNetCore.Mvc.Versioning;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
-using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using Presentation;
 using Presentation.ActionFilters;
 using Repository;
-using Service;
-using Service.Contracts;
 using Service.Contracts.DataShaping;
 using Service.Contracts.GetHelpers;
 using Service.DataShaping;
 using Service.GetHelpers;
-using Service.Parameters;
 using Shared.DTO.Company;
 using Shared.DTO.Employee;
 using Shared.DTO.Options;
-using System.Text;
 using WebApi.Formatters;
 using WebApi.Utility;
 
@@ -68,7 +64,7 @@ namespace WebApi.Extensions
 
         public static IServiceCollection AddServices(this IServiceCollection services)
         {
-            return services.AddScoped<IServiceManager, ServiceManager>()
+            return services
                 .AddSingleton<ILoggerManager, LoggerManager>()
                 .AddDataShaper()
                 .AddScoped<IEmployeeLinksGenerator, EmployeeLinksGenerator>()

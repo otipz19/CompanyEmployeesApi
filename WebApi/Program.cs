@@ -2,7 +2,6 @@ using AspNetCoreRateLimit;
 using Contracts.LoggerService;
 using Microsoft.AspNetCore.HttpOverrides;
 using NLog;
-using Service.Parameters;
 using Shared.DTO.Options;
 using WebApi.Extensions;
 

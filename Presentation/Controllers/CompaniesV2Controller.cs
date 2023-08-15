@@ -1,7 +1,8 @@
-﻿using Entities.LinkModels;
+﻿using Application.Queries.Companies;
+using Entities.LinkModels;
+using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using Presentation.ActionFilters;
-using Service.Contracts;
 using Shared.DTO.RequestFeatures;
 
 namespace Presentation.Controllers
@@ -12,11 +13,11 @@ namespace Presentation.Controllers
     [ApiExplorerSettings(GroupName = "v2")]
     public class CompaniesV2Controller : ControllerBase
     {
-        private readonly IServiceManager _services;
+        private readonly ISender _sender;
 
-        public CompaniesV2Controller(IServiceManager services)
+        public CompaniesV2Controller(ISender sender)
         {
-            _services = services;
+            _sender = sender;
         }
 
         [HttpGet]
@@ -24,8 +25,8 @@ namespace Presentation.Controllers
         [ValidateMediaType]
         public async Task<ActionResult> GetCompanies([FromQuery] CompanyRequestParameters requestParameters)
         {
-            var companies = await _services.CompanyService
-                .GetCompanies(new LinkCompaniesParameters(requestParameters, HttpContext));
+            var query = new GetCompaniesQuery(new LinkCompaniesParameters(requestParameters, HttpContext));
+            var companies = await _sender.Send(query);
 
             return Ok(companies.response.HasLinks ? companies.response.LinkedEntities : companies.response.ShapedEntities);
         }
